@@ -1,0 +1,124 @@
+﻿using Firebase.Auth;
+using Firebase.Storage;
+using WebHotel.DTO;
+
+namespace WebHotel.Service.FileService
+{
+    public class FileService : IFileService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
+        private static string ApiKey = "AIzaSyDUF3f3BRaqQfX_1CZYtfjtVdHhlIGsX3U";
+        private static string Bucket = "webhotel-bfad4.appspot.com";
+        private static string AuthEmail = "hungmetaron2@gmail.com";
+        private static string AuthPassword = "123123";
+
+        public FileService(IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            _configuration = configuration;
+            _environment = environment;
+        }
+
+        public async Task<FileResponseDto> GetFile(string rootFolder, string fileName)
+        {
+            var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+            var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+            var cancellation = new CancellationTokenSource();
+
+            var task = new FirebaseStorage(
+                Bucket,
+                new FirebaseStorageOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                    ThrowOnCancel = true
+                })
+                .Child(rootFolder)
+                .Child(fileName)
+                .GetDownloadUrlAsync();
+            try
+            {
+                string link = await task;
+                return new FileResponseDto { Status = 1, Url = link };
+            }
+            catch (Exception ex)
+            {
+                return new FileResponseDto { Status = 0, Errors = ex.InnerException!.Message };
+            }
+        }
+
+        public async Task<FileResponseDto> SendFile(string rootFolder, IFormFile file)
+        {
+            FileStream stream;
+            if (file.Length > 0)
+            {
+                string path_root = Path.Combine(_environment.WebRootPath, "Images");
+                if (!Directory.Exists(path_root))
+                {
+                    Directory.CreateDirectory(path_root);
+                }
+                string path = Path.Combine(_environment.WebRootPath, "Images", file.FileName);
+                using (stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                stream = new FileStream(path, FileMode.Open);
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+                var cancellation = new CancellationTokenSource();
+
+                var task = new FirebaseStorage(
+                    Bucket,
+                    new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                        ThrowOnCancel = true
+                    })
+                    .Child(rootFolder)
+                    .Child(file.FileName)
+                    .PutAsync(stream, cancellation.Token);
+                try
+                {
+                    string link = await task;
+                    return new FileResponseDto { Status = 1, Url = link };
+                }
+                catch (Exception ex)
+                {
+                    return new FileResponseDto { Status = 0, Errors = ex.InnerException!.Message };
+                }
+                finally
+                {
+                    stream.Dispose();
+                    File.Delete(path);
+                }
+            }
+            return new FileResponseDto { Status = 0, Errors = "Not Choose File" };
+        }
+
+        public async Task<bool> deleteFile(string rootFolder, string fileName)
+        {
+            var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+            var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+            var cancellation = new CancellationTokenSource();
+
+            var task = new FirebaseStorage(
+                Bucket,
+                new FirebaseStorageOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                    ThrowOnCancel = true
+                })
+                .Child(rootFolder)
+                .Child(fileName)
+                .DeleteAsync();
+            try
+            {
+                await task;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
+}
