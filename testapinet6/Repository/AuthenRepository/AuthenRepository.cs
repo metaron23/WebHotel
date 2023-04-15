@@ -21,7 +21,7 @@ namespace WebHotel.Repository.AuthenRepository
     {
         private readonly MyDBContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ITokenRepository _tokenService;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMailRepository _mailRepository;
@@ -29,7 +29,7 @@ namespace WebHotel.Repository.AuthenRepository
 
         public AuthenRepository(MyDBContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<ApplicationRole> roleManager,
             ITokenRepository tokenService,
             SignInManager<ApplicationUser> signInManager,
             IMailRepository mailRepository,
@@ -57,7 +57,7 @@ namespace WebHotel.Repository.AuthenRepository
                     new StatusDto
                     {
                         StatusCode = 0,
-                        Message = "Tài khoản đã bị khoá vì nhập sai 3 lần! Thời gian mở khoá là: " + user.LockoutEnd.Value.AddHours(7),
+                        Message = "Account has been locked because of wrong input 3 times! Unlocking times are: " + user.LockoutEnd.Value.AddHours(7),
                     };
                 }
                 var check = await _signInManager.PasswordSignInAsync(user, model.Password!, false, true);
@@ -120,7 +120,7 @@ namespace WebHotel.Repository.AuthenRepository
             return new StatusDto
             {
                 StatusCode = 0,
-                Message = "Sai tài khoản hoặc mật khẩu!",
+                Message = "Wrong account or password!",
             };
         }
 
@@ -130,7 +130,7 @@ namespace WebHotel.Repository.AuthenRepository
             if (!ModelState.IsValid)
             {
                 status.StatusCode = 0;
-                status.Message = "Vui lòng điền đủ thông tin đăng ký";
+                status.Message = "Please complete registration information";
                 return status;
             }
             // check if user exists
@@ -140,13 +140,13 @@ namespace WebHotel.Repository.AuthenRepository
             if (userExistsEmail != null)
             {
                 status.StatusCode = 0;
-                status.Message = "Email đã tồn tại trong hệ thống";
+                status.Message = "Email already exists in the system";
                 return status;
             }
             if (userExistsUserName != null)
             {
                 status.StatusCode = 0;
-                status.Message = "UseName đã tồn tại trong hệ thống";
+                status.Message = "UseName already exists in the system";
                 return status;
             }
 
@@ -164,12 +164,12 @@ namespace WebHotel.Repository.AuthenRepository
             if (!result.Succeeded)
             {
                 status.StatusCode = 0;
-                status.Message = "Dữ liệu đủ, nhưng tạo mới tài khoản User lỗi!";
+                status.Message = "There was an error during account creation, please try again!";
                 return status;
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                await _roleManager.CreateAsync(new ApplicationRole(UserRoles.User));
 
             if (await _roleManager.RoleExistsAsync(UserRoles.User))
             {
@@ -194,12 +194,12 @@ namespace WebHotel.Repository.AuthenRepository
             }))
             {
                 status.StatusCode = 1;
-                status.Message = "Tạo mới thành công. Vui lòng kiểm tra email để kích hoạt tài khoản!";
+                status.Message = "Successfully created new account. Please check your email to activate your account!";
             }
             else
             {
                 status.StatusCode = 0;
-                status.Message = "Tạo mới thành công, nhưng gửi mail thất bại";
+                status.Message = "Create new account successfully, but send email failed";
             }
 
             return status;
@@ -243,7 +243,7 @@ namespace WebHotel.Repository.AuthenRepository
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                await _roleManager.CreateAsync(new ApplicationRole(UserRoles.Admin));
 
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
             {
@@ -274,21 +274,21 @@ namespace WebHotel.Repository.AuthenRepository
                     _mailRepository.SendMail(new EmailRequestDto
                     {
                         To = user.Email,
-                        Subject = "Mail reset mật khẩu tài khoản!",
-                        Body = "Chào bạn, " + user.Name + "! Mật khẩu mới của bạn là: " + password + ". Vui lòng không đổi mật khẩu mới sau khi đăng nhập tài khoản!"
+                        Subject = "Mail reset account password!",
+                        Body = "Chào bạn, " + user.Name + "! Your new password is: " + password + ". Please do not change your password after logging in!"
                     });
                     status.StatusCode = 1;
-                    status.Message = "Vui lòng kiểm tra hòm thử để nhận mật khẩu mới!";
+                    status.Message = "Please check the test box to get a new password!";
                     return status;
                 }
                 else
                 {
                     status.StatusCode = 0;
-                    status.Message = "Có lỗi trong quá trình reset mật khẩu mới! Vui lòng thử lại!";
+                    status.Message = "There was an error during resetting the new password! Please try again!";
                 }
             }
             status.StatusCode = 0;
-            status.Message = "Email không tồn tại trong hệ thống!";
+            status.Message = "Email does not exist in the system!";
             return status;
         }
 
@@ -297,7 +297,7 @@ namespace WebHotel.Repository.AuthenRepository
             var user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email!);
             if (user is null)
             {
-                return new StatusDto { StatusCode = 0, Message = "Email không tồn tại" };
+                return new StatusDto { StatusCode = 0, Message = "Email does not exist" };
             }
             string token = HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
             var param = new Dictionary<string, string?>

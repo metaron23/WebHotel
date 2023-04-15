@@ -47,8 +47,9 @@ namespace WebHotel.Repository.RoomRepository
             return roomResponses;
         }
 
+#pragma warning disable CS8613
         [return: MaybeNull]
-        public async Task<RoomResponseDto> GetById(string id)
+        public async Task<RoomResponseDto?> GetById(string id)
         {
             var roomBases = _context.Rooms.Include(a => a.RoomType).AsNoTracking().SingleOrDefault(a => a.Id == id);
             if (roomBases != null)

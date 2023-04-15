@@ -16,14 +16,14 @@ namespace WebHotel.Service.TokenRepository
     {
         private readonly MyDBContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
 
         public TokenRepository(MyDBContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<ApplicationRole> roleManager,
             IConfiguration configuration, SignInManager<ApplicationUser> signInManager, IMapper mapper
             )
         {

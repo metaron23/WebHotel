@@ -24,6 +24,7 @@ namespace WebHotel.Repository.UserProfileRepository
             _fileService = fileService;
         }
 
+#pragma warning disable CS8766
         [return: MaybeNull]
         public UserProfileResponseDto Get(string? email)
         {

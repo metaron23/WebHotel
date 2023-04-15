@@ -14,7 +14,7 @@ namespace WebHotel.Startup
                 DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1),
                 MaxFailedAccessAttempts = 3
             };
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;

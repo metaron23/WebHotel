@@ -23,6 +23,7 @@ namespace WebHotel.Helper
             CreateMap<UserProfileResponseDto, ApplicationUser>().ReverseMap();
 
             CreateMap<RoomResponseDto, Room>().ReverseMap();
+
             CreateMap<RoomCreateDto, Room>().ReverseMap();
 
             CreateMap<RoomStarRequestDto, RoomStar>().ReverseMap();
@@ -34,6 +35,14 @@ namespace WebHotel.Helper
             CreateMap<DiscountRequestDto, Discount>().ReverseMap();
 
             CreateMap<DiscountRoomDetailRequest, DiscountRoomDetail>().ReverseMap();
+
+            CreateMap<DiscountUpdateDto, Discount>().ReverseMap();
+
+            CreateMap<DiscountResponseDto, Discount>()
+                .ReverseMap()
+                .ForMember(destination => destination.NameType, options => options.MapFrom(source => source.DiscountType.Name))
+                .ForMember(destination => destination.Email, options => options.MapFrom(source => source.Creator.Email))
+                .ForMember(destination => destination.Roles, options => options.MapFrom(source => source.Creator.UserRoles.Select(a => a.Role!.Name).ToList()));
         }
     }
 }

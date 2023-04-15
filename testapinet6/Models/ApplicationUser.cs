@@ -3,7 +3,7 @@ using WebHotel.Models;
 
 namespace WebHotel.Model
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<string>
     {
         public string Name { get; set; } = null!;
         public string? Address { get; set; }
@@ -24,5 +24,49 @@ namespace WebHotel.Model
         public virtual ICollection<OrderService> OrderServices { get; } = new List<OrderService>();
 
         public virtual ICollection<Reservation> Reservations { get; } = new List<Reservation>();
+
+        public virtual ICollection<ApplicationUserClaim> Claims { get; } = new List<ApplicationUserClaim>();
+        public virtual ICollection<ApplicationUserLogin> Logins { get; } = new List<ApplicationUserLogin>();
+        public virtual ICollection<ApplicationUserToken> Tokens { get; } = new List<ApplicationUserToken>();
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+    }
+
+    public class ApplicationRole : IdentityRole<string>
+    {
+        public ApplicationRole() : base()
+        {
+        }
+        public ApplicationRole(string roleName) : base(roleName)
+        {
+        }
+
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+        public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; } = new List<ApplicationRoleClaim>();
+    }
+
+    public class ApplicationUserRole : IdentityUserRole<string>
+    {
+        public virtual ApplicationUser? User { get; set; }
+        public virtual ApplicationRole? Role { get; set; }
+    }
+
+    public class ApplicationUserClaim : IdentityUserClaim<string>
+    {
+        public virtual ApplicationUser? User { get; set; }
+    }
+
+    public class ApplicationUserLogin : IdentityUserLogin<string>
+    {
+        public virtual ApplicationUser? User { get; set; }
+    }
+
+    public class ApplicationRoleClaim : IdentityRoleClaim<string>
+    {
+        public virtual ApplicationRole? Role { get; set; }
+    }
+
+    public class ApplicationUserToken : IdentityUserToken<string>
+    {
+        public virtual ApplicationUser? User { get; set; }
     }
 }

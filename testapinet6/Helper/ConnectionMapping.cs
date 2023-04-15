@@ -2,6 +2,7 @@
 {
     public class ConnectionMapping<T>
     {
+#pragma warning disable CS8714
         private readonly Dictionary<T, HashSet<string>> _connections =
             new Dictionary<T, HashSet<string>>();
 

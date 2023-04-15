@@ -5,13 +5,28 @@ using WebHotel.Models;
 
 namespace WebHotel.Data;
 
-public partial class MyDBContext : IdentityDbContext<ApplicationUser>
+public partial class MyDBContext : IdentityDbContext<ApplicationUser, ApplicationRole, string,
+        ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin,
+        ApplicationRoleClaim, ApplicationUserToken>
 {
+#pragma warning disable CS8618
     public MyDBContext(DbContextOptions<MyDBContext> options) : base(options)
     {
     }
 
     public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+    public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }
+
+    public virtual DbSet<ApplicationRoleClaim> ApplicationRoleClaims { get; set; }
+
+    public virtual DbSet<ApplicationUserLogin> ApplicationUserLogins { get; set; }
+
+    public virtual DbSet<ApplicationUserToken> ApplicationUserTokens { get; set; }
+
+    public virtual DbSet<ApplicationUserClaim> ApplicationUserClaims { get; set; }
+
+    public virtual DbSet<ApplicationUserRole> ApplicationUserRoles { get; set; }
 
     public virtual DbSet<Discount> Discounts { get; set; }
 
@@ -59,6 +74,47 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.CreatedAt).IsRowVersion().IsConcurrencyToken().HasDefaultValueSql("GetDate()");
             entity.Property(e => e.Name).IsRequired(false);
         });
+        modelBuilder.Entity<ApplicationUser>(b =>
+        {
+            // Each User can have many UserClaims
+            b.HasMany(e => e.Claims)
+                .WithOne(e => e.User)
+                .HasForeignKey(uc => uc.UserId)
+                .IsRequired();
+
+            // Each User can have many UserLogins
+            b.HasMany(e => e.Logins)
+                .WithOne(e => e.User)
+                .HasForeignKey(ul => ul.UserId)
+                .IsRequired();
+
+            // Each User can have many UserTokens
+            b.HasMany(e => e.Tokens)
+                .WithOne(e => e.User)
+                .HasForeignKey(ut => ut.UserId)
+                .IsRequired();
+
+            // Each User can have many entries in the UserRole join table
+            b.HasMany(e => e.UserRoles)
+                .WithOne(e => e.User)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<ApplicationRole>(b =>
+        {
+            // Each Role can have many entries in the UserRole join table
+            b.HasMany(e => e.UserRoles)
+                .WithOne(e => e.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+
+            // Each Role can have many associated RoleClaims
+            b.HasMany(e => e.RoleClaims)
+                .WithOne(e => e.Role)
+                .HasForeignKey(rc => rc.RoleId)
+                .IsRequired();
+        });
         modelBuilder.Entity<Discount>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Discount__3214EC078ED86676");
@@ -72,6 +128,7 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.DiscountPercent).HasColumnType("decimal(19, 2)");
             entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.IsPermanent).HasDefaultValueSql("((0))");
+            entity.Property(e => e.Active).HasDefaultValueSql("((1))");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.StartAt).HasColumnType("datetime");
 

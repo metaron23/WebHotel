@@ -20,6 +20,8 @@ public partial class Discount
 
     public bool? IsPermanent { get; set; }
 
+    public bool? Active { get; set; }
+
     public int DiscountTypeId { get; set; }
 
     public string CreatorId { get; set; } = null!;
