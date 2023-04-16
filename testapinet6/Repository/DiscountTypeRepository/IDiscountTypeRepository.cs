@@ -5,6 +5,9 @@ namespace WebHotel.Repository.DiscountTypeRepository
 {
     public interface IDiscountTypeRepository
     {
-        Task<StatusDto> Create(DiscountTypeCreateDto discountTypeDto);
+        Task<StatusDto> Create(DiscountTypeRequestDto discountTypeDto);
+        Task<StatusDto> Update(int? id, DiscountTypeResponseDto discountTypeDto);
+        Task<StatusDto> Delete(int? id);
+        Task<IEnumerable<DiscountTypeResponseDto>> GetAll();
     }
 }

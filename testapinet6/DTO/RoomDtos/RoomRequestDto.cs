@@ -2,7 +2,7 @@
 
 namespace WebHotel.DTO.RoomDtos
 {
-    public class RoomCreateDto
+    public class RoomRequestDto
     {
         [Required(ErrorMessage = "{0} is required")]
         public string RoomNumber { get; set; } = null!;

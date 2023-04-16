@@ -1,6 +1,6 @@
 ﻿namespace WebHotel.DTO.DiscountTypeDtos
 {
-    public class DiscountTypeCreateDto
+    public class DiscountTypeResponseDto
     {
         public string? Name { get; set; }
     }

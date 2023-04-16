@@ -5,6 +5,6 @@ namespace WebHotel.Repository.RoomTypeRepository
 {
     public interface IRoomTypeRepository
     {
-        Task<StatusDto> Create(RoomTypeCreateDto roomTypeCreateDto);
+        Task<StatusDto> Create(RoomTypeRequestDto roomTypeCreateDto);
     }
 }

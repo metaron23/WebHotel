@@ -8,7 +8,7 @@ namespace WebHotel.Repository.RoomRepository
 {
     public partial class RoomRepository
     {
-        public async Task<StatusDto> Create([FromForm] RoomCreateDto roomCreateDto)
+        public async Task<StatusDto> Create([FromForm] RoomRequestDto roomCreateDto)
         {
             var room = _mapper.Map<Room>(roomCreateDto);
             try

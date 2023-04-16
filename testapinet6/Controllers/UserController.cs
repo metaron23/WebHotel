@@ -52,7 +52,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost]
+    [HttpPatch]
     [Route("/user/user-profile/update")]
     public async Task<IActionResult> Update([FromForm] UserProfileRequestDto _user)
     {

@@ -17,7 +17,7 @@ namespace WebHotel.Repository.RoomTypeRepository
             _mapper = mapper;
         }
 
-        public async Task<StatusDto> Create(RoomTypeCreateDto roomTypeCreateDto)
+        public async Task<StatusDto> Create(RoomTypeRequestDto roomTypeCreateDto)
         {
             try
             {

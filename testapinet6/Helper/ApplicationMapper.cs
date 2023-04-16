@@ -2,6 +2,7 @@
 using Database.Models;
 using WebHotel.DTO.DiscountDtos;
 using WebHotel.DTO.DiscountRoomDetailDtos;
+using WebHotel.DTO.DiscountTypeDtos;
 using WebHotel.DTO.ReservationDtos;
 using WebHotel.DTO.RoomDtos;
 using WebHotel.DTO.RoomStarDtos;
@@ -23,11 +24,11 @@ namespace WebHotel.Helper
 
             CreateMap<RoomResponseDto, Room>().ReverseMap();
 
-            CreateMap<RoomCreateDto, Room>().ReverseMap();
+            CreateMap<RoomRequestDto, Room>().ReverseMap();
 
             CreateMap<RoomStarRequestDto, RoomStar>().ReverseMap();
 
-            CreateMap<RoomTypeCreateDto, RoomType>().ReverseMap();
+            CreateMap<RoomTypeRequestDto, RoomType>().ReverseMap();
 
             CreateMap<ReservationCreateDto, Reservation>().ReverseMap();
 
@@ -42,6 +43,8 @@ namespace WebHotel.Helper
                 .ForMember(destination => destination.NameType, options => options.MapFrom(source => source.DiscountType.Name))
                 .ForMember(destination => destination.Email, options => options.MapFrom(source => source.Creator.Email))
                 .ForMember(destination => destination.Roles, options => options.MapFrom(source => source.Creator.UserRoles.Select(a => a.Role!.Name).ToList()));
+
+            CreateMap<DiscountType, DiscountTypeResponseDto>().ReverseMap();
         }
     }
 }

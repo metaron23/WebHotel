@@ -2,6 +2,7 @@
 using Database.Data;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
+using WebHotel.DTO;
 using WebHotel.DTO.RoomDtos;
 using WebHotel.Service.FileService;
 
@@ -22,7 +23,6 @@ namespace WebHotel.Repository.RoomRepository
 
         public async Task CheckDiscount(Room room)
         {
-            //_context.Rooms.Select(a => _context.DiscountRoomDetails)
             var discount = await _context.DiscountRoomDetails.Include(a => a.Discount)
                 .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
             if (discount != null)
@@ -34,6 +34,10 @@ namespace WebHotel.Repository.RoomRepository
         public async Task<IEnumerable<RoomResponseDto>> GetAll()
         {
             var roomBases = await _context.Rooms.Include(a => a.RoomType).AsNoTracking().ToListAsync();
+            if (roomBases == null)
+            {
+                return default!;
+            }
             var roomResponse = new RoomResponseDto();
             var roomResponses = new List<RoomResponseDto>();
             foreach (var item in roomBases)
@@ -82,6 +86,10 @@ namespace WebHotel.Repository.RoomRepository
             var roomResponse = new RoomResponseDto();
             var roomResponses = new List<RoomResponseDto>();
             var roomBases = await roomBasesQuery.ToListAsync();
+            if (roomBases == null)
+            {
+                return default!;
+            }
             foreach (var item in roomBases)
             {
                 await CheckDiscount(item);
@@ -99,6 +107,47 @@ namespace WebHotel.Repository.RoomRepository
             roomSearch.MaxPrice = await _context.Rooms.MaxAsync(a => a.CurrentPrice);
             roomSearch.ServiceAttachs = await _context.ServiceAttaches.Select(a => a.Name).ToListAsync();
             return roomSearch;
+        }
+
+        public async Task<StatusDto> Update(string? id, RoomRequestDto roomCreateDto)
+        {
+            var room = await _context.Rooms.SingleOrDefaultAsync(a => a.Id == id);
+            if (room is not null)
+            {
+                _mapper.Map(roomCreateDto, room);
+                try
+                {
+                    await _context.AddAsync(room);
+                    await _context.SaveChangesAsync();
+                    return new StatusDto { StatusCode = 1, Message = "Created successfully" };
+                }
+                catch (Exception ex)
+                {
+                    return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                }
+            }
+            return new StatusDto { StatusCode = 0, Message = "Room not exists" };
+
+        }
+
+        public async Task<StatusDto> Delete(string? id)
+        {
+            var room = await _context.Rooms.SingleOrDefaultAsync(a => a.Id == id);
+            if (room is not null)
+            {
+                try
+                {
+                    _context.Remove(room);
+                    await _context.SaveChangesAsync();
+                    return new StatusDto { StatusCode = 1, Message = "Removed successfully" };
+                }
+                catch (Exception ex)
+                {
+                    return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                }
+            }
+            return new StatusDto { StatusCode = 0, Message = "Room not exists" };
+
         }
     }
 }

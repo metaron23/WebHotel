@@ -31,7 +31,7 @@ namespace WebHotel.Controllers
 
         [HttpPost]
         [Route("/room-type/create")]
-        public async Task<IActionResult> Create([FromBody] RoomTypeCreateDto roomTypeCreateDto)
+        public async Task<IActionResult> Create([FromBody] RoomTypeRequestDto roomTypeCreateDto)
         {
             var result = await _roomTypeRepository.Create(roomTypeCreateDto);
             if (result.StatusCode == 1)

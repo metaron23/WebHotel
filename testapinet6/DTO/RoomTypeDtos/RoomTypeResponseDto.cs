@@ -1,6 +1,6 @@
 ﻿namespace WebHotel.DTO.RoomTypeDtos
 {
-    public class RoomTypeCreateDto
+    public class RoomTypeResponseDto
     {
         public string TypeName { get; set; } = null!;
     }
