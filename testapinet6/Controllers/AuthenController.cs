@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
-using WebHotel.DTO.Authentication;
 using WebHotel.DTO.AuthenticationDtos;
 using WebHotel.Repository.AuthenRepository;
 using WebHotel.Repository.EmailRepository;

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
+using Database.Data;
+using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using WebHotel.Data;
 using WebHotel.DTO;
 using WebHotel.DTO.DiscountDtos;
-using WebHotel.Models;
 
 namespace WebHotel.Repository.DiscountRepository
 {

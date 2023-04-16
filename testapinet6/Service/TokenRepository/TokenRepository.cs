@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
+using Database.Data;
+using Database.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using WebHotel.Data;
 using WebHotel.DTO;
-using WebHotel.DTO.Token;
-using WebHotel.Model;
+using WebHotel.DTO.TokenDtos;
 
 namespace WebHotel.Service.TokenRepository
 {

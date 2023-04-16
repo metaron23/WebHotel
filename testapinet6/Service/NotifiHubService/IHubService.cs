@@ -1,4 +1,4 @@
-﻿namespace WebHotel.Service.NotifiHub
+﻿namespace WebHotel.Service.NotifiHubService
 {
     public interface IHubService
     {

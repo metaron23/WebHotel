@@ -1,8 +1,8 @@
-﻿using WebHotel.DTO;
+﻿using Database.Models;
+using WebHotel.DTO;
 using WebHotel.DTO.ServiceAttachDtos;
-using WebHotel.Models;
 
-namespace WebHotel.Repository.AttachServiceRepository
+namespace WebHotel.Repository.ServiceAttachRepository
 {
     public interface IServiceAttachRepository
     {

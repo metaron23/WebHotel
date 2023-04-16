@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace WebHotel.DTO;
+﻿namespace WebHotel.DTO;
 
 public partial class TokenInfoDto
 {

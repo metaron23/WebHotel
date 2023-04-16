@@ -10,9 +10,7 @@ namespace WebHotel.Repository.RoomRepository
         Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber);
 
         Task<RoomResponseDto> GetById(string id);
-
         Task<StatusDto> Create(RoomCreateDto roomCreateDto);
-
         Task<RoomSearchDto> GetRoomSearch();
     }
 }

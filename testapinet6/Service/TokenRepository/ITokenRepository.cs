@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using WebHotel.DTO.Token;
+using WebHotel.DTO.TokenDtos;
 
 namespace WebHotel.Service.TokenRepository
 {

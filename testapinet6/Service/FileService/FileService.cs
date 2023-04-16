@@ -8,15 +8,19 @@ namespace WebHotel.Service.FileService
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
-        private static string ApiKey = "AIzaSyDUF3f3BRaqQfX_1CZYtfjtVdHhlIGsX3U";
-        private static string Bucket = "webhotel-bfad4.appspot.com";
-        private static string AuthEmail = "hungmetaron2@gmail.com";
-        private static string AuthPassword = "123123";
+        private readonly string ApiKey = "";
+        private readonly string Bucket = "";
+        private readonly string AuthEmail = "";
+        private readonly string AuthPassword = "";
 
         public FileService(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
             _environment = environment;
+            ApiKey = _configuration["Firebase:ApiKey"];
+            Bucket = _configuration["Firebase:Bucket"];
+            AuthEmail = _configuration["Firebase:AuthEmail"];
+            AuthPassword = _configuration["Firebase:AuthPassword"];
         }
 
         public async Task<FileResponseDto> GetFile(string rootFolder, string fileName)

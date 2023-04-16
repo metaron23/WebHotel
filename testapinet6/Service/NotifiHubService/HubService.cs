@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using WebHotel.Helper;
 
-namespace WebHotel.Service.NotifiHub
+namespace WebHotel.Service.NotifiHubService
 {
 
     [Authorize]
@@ -13,7 +13,7 @@ namespace WebHotel.Service.NotifiHub
 
         public void SendChatMessage(string whoReceive, string message)
         {
-            if(Context.User is not null)
+            if (Context.User is not null)
             {
                 var name = Context.User.Claims.FirstOrDefault(a => a.Type == "UserName")!.Value;
                 Clients.Caller.ReceiveMessage(name, message);

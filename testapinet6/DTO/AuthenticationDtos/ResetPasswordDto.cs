@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebHotel.DTO.Authentication
+namespace WebHotel.DTO.AuthenticationDtos
 {
     public class ResetPasswordDto
     {

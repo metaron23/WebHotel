@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Database.Data;
+using Database.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -6,12 +8,8 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 using System.Web;
 using WebHotel.Commom;
-using WebHotel.Data;
 using WebHotel.DTO;
-using WebHotel.DTO.Authentication;
 using WebHotel.DTO.AuthenticationDtos;
-using WebHotel.Model;
-using WebHotel.Models;
 using WebHotel.Repository.EmailRepository;
 using WebHotel.Service.TokenRepository;
 

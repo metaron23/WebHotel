@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
-using WebHotel.DTO.Token;
+using WebHotel.DTO.TokenDtos;
 using WebHotel.Service.TokenRepository;
 
 namespace WebHotel.Controllers

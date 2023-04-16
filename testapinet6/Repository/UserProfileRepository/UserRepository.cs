@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Database.Data;
+using Database.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics.CodeAnalysis;
-using WebHotel.Data;
 using WebHotel.DTO;
 using WebHotel.DTO.UserDtos;
-using WebHotel.Model;
 using WebHotel.Service.FileService;
 
 namespace WebHotel.Repository.UserProfileRepository

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebHotel.DTO.Token
+namespace WebHotel.DTO.TokenDtos
 {
     public class TokenRequestDto
     {

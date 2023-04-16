@@ -1,4 +1,4 @@
-﻿using WebHotel.Models;
+﻿using Database.Models;
 
 namespace WebHotel.DTO.RoomDtos
 {

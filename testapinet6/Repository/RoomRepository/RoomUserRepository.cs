@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
+using Database.Data;
+using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
-using WebHotel.Data;
 using WebHotel.DTO.RoomDtos;
-using WebHotel.Models;
 using WebHotel.Service.FileService;
 
 namespace WebHotel.Repository.RoomRepository
@@ -47,9 +46,7 @@ namespace WebHotel.Repository.RoomRepository
             return roomResponses;
         }
 
-#pragma warning disable CS8613
-        [return: MaybeNull]
-        public async Task<RoomResponseDto?> GetById(string id)
+        public async Task<RoomResponseDto> GetById(string id)
         {
             var roomBases = _context.Rooms.Include(a => a.RoomType).AsNoTracking().SingleOrDefault(a => a.Id == id);
             if (roomBases != null)
@@ -60,7 +57,7 @@ namespace WebHotel.Repository.RoomRepository
                 roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
                 return roomResponse;
             }
-            return default;
+            return default!;
         }
 
         public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber)

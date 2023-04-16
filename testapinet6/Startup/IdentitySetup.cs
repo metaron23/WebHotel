@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using WebHotel.Data;
-using WebHotel.Model;
+﻿using Database.Data;
+using Database.Models;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace WebHotel.Startup
 {

@@ -1,7 +1,7 @@
-﻿using WebHotel.Data;
+﻿using Database.Data;
+using Database.Models;
 using WebHotel.DTO;
 using WebHotel.DTO.DiscountTypeDtos;
-using WebHotel.Models;
 
 namespace WebHotel.Repository.DiscountTypeRepository
 {

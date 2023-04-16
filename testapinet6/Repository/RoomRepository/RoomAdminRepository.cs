@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Database.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebHotel.DTO;
 using WebHotel.DTO.RoomDtos;
-using WebHotel.Models;
 
 namespace WebHotel.Repository.RoomRepository
 {
     public partial class RoomRepository
     {
-
         public async Task<StatusDto> Create([FromForm] RoomCreateDto roomCreateDto)
         {
             var room = _mapper.Map<Room>(roomCreateDto);

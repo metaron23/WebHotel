@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using WebHotel.Data;
+using Database.Data;
+using Database.Models;
 using WebHotel.DTO;
 using WebHotel.DTO.RoomTypeDtos;
-using WebHotel.Models;
 
 namespace WebHotel.Repository.RoomTypeRepository
 {

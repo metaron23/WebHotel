@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
+using Database.Models;
 using WebHotel.DTO.DiscountDtos;
 using WebHotel.DTO.DiscountRoomDetailDtos;
 using WebHotel.DTO.ReservationDtos;
 using WebHotel.DTO.RoomDtos;
 using WebHotel.DTO.RoomStarDtos;
 using WebHotel.DTO.RoomTypeDtos;
-using WebHotel.DTO.Token;
+using WebHotel.DTO.TokenDtos;
 using WebHotel.DTO.UserDtos;
-using WebHotel.Model;
-using WebHotel.Models;
 
 namespace WebHotel.Helper
 {

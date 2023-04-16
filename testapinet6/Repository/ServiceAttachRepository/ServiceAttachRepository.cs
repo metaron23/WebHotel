@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using Database.Data;
+using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using WebHotel.Data;
 using WebHotel.DTO;
 using WebHotel.DTO.ServiceAttachDtos;
-using WebHotel.Models;
 
-namespace WebHotel.Repository.AttachServiceRepository
+namespace WebHotel.Repository.ServiceAttachRepository
 {
     public class ServiceAttachRepository : IServiceAttachRepository
     {

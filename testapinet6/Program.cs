@@ -1,6 +1,6 @@
+using Database.Data;
 using Microsoft.EntityFrameworkCore;
-using WebHotel.Data;
-using WebHotel.Service.NotifiHub;
+using WebHotel.Service.NotifiHubService;
 using WebHotel.Startup;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
