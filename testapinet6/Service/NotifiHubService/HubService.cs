@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 using WebHotel.Helper;
 
 namespace WebHotel.Service.NotifiHubService
 {
 
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ChatHub : Hub<IHubService>
     {
         private readonly static ConnectionMapping<string> _connections =
@@ -15,11 +16,11 @@ namespace WebHotel.Service.NotifiHubService
         {
             if (Context.User is not null)
             {
-                var name = Context.User.Claims.FirstOrDefault(a => a.Type == "UserName")!.Value;
-                Clients.Caller.ReceiveMessage(name, message);
-                foreach (var connectionID in _connections.GetConnections(whoReceive))
+                var name = Context.User?.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)!.Value!;
+                //Clients.Caller.ReceiveMessage(name, message);
+                foreach (var connectionID in _connections.GetConnections(name))
                 {
-                    Clients.Client(connectionID).ReceiveMessage(name, message);
+                    Clients.Client(connectionID).ReceiveMessage(name, "Đã rõ");
                 }
             }
         }
@@ -31,14 +32,14 @@ namespace WebHotel.Service.NotifiHubService
 
         public override Task OnConnectedAsync()
         {
-            var name = Context.User?.Claims.FirstOrDefault(a => a.Type == "UserName")!.Value!;
+            var name = Context.User?.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)!.Value!;
             _connections.Add(name, Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            var name = Context.User?.Claims.FirstOrDefault(a => a.Type == "UserName")!.Value!;
+            var name = Context.User?.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Name)!.Value!;
             _connections.Remove(name, Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }

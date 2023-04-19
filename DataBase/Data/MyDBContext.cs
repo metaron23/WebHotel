@@ -1,4 +1,5 @@
 ﻿using Database.Models;
+using DataBase.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,6 +63,8 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
     public virtual DbSet<ServiceRoom> ServiceRooms { get; set; }
 
     public virtual DbSet<TokenInfo> TokenInfos { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -479,6 +482,21 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
         modelBuilder.Entity<TokenInfo>(entity =>
         {
             entity.ToTable("TokenInfo");
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.ToTable("Notification");
+            entity.HasKey(e => e.Id).HasName("PK_Notification");
+
+            entity.Property(e => e.CreateAt).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notification_AspNetUsers");
+
+            entity.Property(e => e.Status).HasDefaultValueSql("1");
         });
 
         OnModelCreatingPartial(modelBuilder);

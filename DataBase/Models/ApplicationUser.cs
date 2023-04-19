@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DataBase.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Database.Models;
 
@@ -25,9 +26,14 @@ public class ApplicationUser : IdentityUser<string>
     public virtual ICollection<Reservation> Reservations { get; } = new List<Reservation>();
 
     public virtual ICollection<ApplicationUserClaim> Claims { get; } = new List<ApplicationUserClaim>();
+
     public virtual ICollection<ApplicationUserLogin> Logins { get; } = new List<ApplicationUserLogin>();
+
     public virtual ICollection<ApplicationUserToken> Tokens { get; } = new List<ApplicationUserToken>();
+
     public virtual ICollection<ApplicationUserRole> UserRoles { get; } = new List<ApplicationUserRole>();
+
+    public virtual ICollection<Notification> Notifications { get; } = new List<Notification>();
 }
 
 public class ApplicationRole : IdentityRole<string>

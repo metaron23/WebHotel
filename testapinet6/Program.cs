@@ -1,5 +1,11 @@
 using Database.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
 using WebHotel.Service.NotifiHubService;
 using WebHotel.Startup;
 
@@ -12,7 +18,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "http://webhotelangular.s3-website.ap-south-1.amazonaws.com")
+            policy.WithOrigins("http://localhost:4200", "http://webhotelangular.s3-website.ap-south-1.amazonaws.com", "http://localhost:8000")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -21,7 +27,7 @@ builder.Services.AddCors(options =>
 #endregion
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+
 
 #region DB Context
 builder.Services.AddDbContext<MyDBContext>(options =>
@@ -29,7 +35,6 @@ builder.Services.AddDbContext<MyDBContext>(options =>
 #endregion
 
 #region Service Custom
-builder.SwaggerService();
 builder.Services.IdentityService();
 builder.Services.RepositoryService();
 builder.AuthenJWTService();
@@ -39,36 +44,58 @@ builder.Services.AuthorService();
 builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddApiVersioning(opt =>
+{
+    opt.DefaultApiVersion = new ApiVersion(1, 0);
+    opt.AssumeDefaultVersionWhenUnspecified = true;
+    opt.ReportApiVersions = true;
+    opt.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
 
+builder.Services.AddVersionedApiExplorer(setup =>
+{
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+});
+var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.IncludeXmlComments(xmlFilePath);
+});
+
+builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 
-#region Swagger
-app.UseSwagger();
-app.UseSwaggerUI();
-#endregion
+
+
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-};
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
+app.UseSwagger();
+
+app.UseSwaggerUI(options =>
+{
+    foreach (var desc in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
+        options.DefaultModelsExpandDepth(-1);
+        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseFileServer();
 
-
-#region Cors
 app.UseCors(MyAllowSpecificOrigins);
-#endregion
 
-
-app.MapHub<ChatHub>("hub");
+app.MapHub<ChatHub>("/hub");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
