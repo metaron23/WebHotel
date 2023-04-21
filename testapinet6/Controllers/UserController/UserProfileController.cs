@@ -10,6 +10,7 @@ namespace WebHotel.Controllers.UserController;
 [ApiController]
 [Authorize(Roles = "User")]
 [ApiVersion("1.0")]
+[Route("user/")]
 public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileRepository _userRepository;
@@ -25,7 +26,7 @@ public class UserProfileController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    [Route("/user/send-file")]
+    [Route("send-file")]
     public async Task<IActionResult> SendFile(string urlFile, IFormFile formFile)
     {
         FileService a = new FileService(_configuration, _environment);
@@ -35,7 +36,7 @@ public class UserProfileController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/user/delete-file")]
+    [Route("delete-file")]
     public async Task<IActionResult> deleteFile(string rootFolder, string fileName)
     {
         FileService a = new FileService(_configuration, _environment);
@@ -45,7 +46,7 @@ public class UserProfileController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("/user/get-file")]
+    [Route("get-file")]
     public async Task<IActionResult> GetFile(string rootFolder, string fileName)
     {
         FileService a = new FileService(_configuration, _environment);
@@ -54,7 +55,7 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpPatch]
-    [Route("/user/user-profile/update")]
+    [Route("user-profile/update")]
     public async Task<IActionResult> Update([FromForm] UserProfileRequestDto _user)
     {
         var emailLogin = User.FindFirst(ClaimTypes.Email)!.Value;
@@ -71,7 +72,7 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Route("/user/user-profile/get")]
+    [Route("user-profile/get")]
     public IActionResult Get()
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;

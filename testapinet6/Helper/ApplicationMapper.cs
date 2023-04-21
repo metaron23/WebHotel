@@ -30,6 +30,8 @@ namespace WebHotel.Helper
 
             CreateMap<RoomTypeRequestDto, RoomType>().ReverseMap();
 
+            CreateMap<RoomTypeResponseDto, RoomType>().ReverseMap();
+
             CreateMap<ReservationCreateDto, Reservation>().ReverseMap();
 
             CreateMap<DiscountRequestDto, Discount>().ReverseMap();

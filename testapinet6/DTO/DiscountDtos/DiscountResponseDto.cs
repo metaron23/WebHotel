@@ -18,7 +18,11 @@
 
         public bool? IsPermanent { get; set; }
 
+        public int DiscountTypeId { get; set; }
+
         public string? NameType { get; set; }
+
+        public string CreatorId { get; set; } = null!;
 
         public string? Email { get; set; }
 

@@ -6,6 +6,7 @@ namespace WebHotel.Controllers.UserController;
 
 [ApiController]
 [ApiVersion("1.0")]
+[Route("user/")]
 public class RoomStarUserController : ControllerBase
 {
     private readonly IRoomStarRepository _roomStarRepository;
@@ -16,7 +17,7 @@ public class RoomStarUserController : ControllerBase
     }
 
     [HttpPost]
-    [Route("user/room-star/create")]
+    [Route("room-star/create")]
     public async Task<IActionResult> Create(RoomStarRequestDto roomStarRequestDto)
     {
         var result = await _roomStarRepository.Create(roomStarRequestDto);

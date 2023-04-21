@@ -8,6 +8,7 @@ namespace WebHotel.Controllers.AdminController;
 
 [ApiController]
 [Authorize(Roles = "Admin")]
+[Route("v{version:apiVersion}/admin/discount-room-detail/")]
 [ApiVersion("2.0")]
 public class DiscountRoomDetailAdminController : ControllerBase
 {
@@ -19,7 +20,7 @@ public class DiscountRoomDetailAdminController : ControllerBase
     }
 
     [HttpPost]
-    [Route("admin/discount-room-detail/create")]
+    [Route("create")]
     public async Task<IActionResult> Create(DiscountRoomDetailRequest discountRoomDetailRequest)
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;

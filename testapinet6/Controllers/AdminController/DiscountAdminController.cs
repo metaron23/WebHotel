@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebHotel.DTO;
 using WebHotel.DTO.DiscountDtos;
 using WebHotel.Repository.AdminRepository.DiscountRepository;
 
@@ -8,6 +9,7 @@ namespace WebHotel.Controllers.AdminController;
 
 [ApiController]
 [Authorize(Roles = "Admin")]
+[Route("v{version:apiVersion}/admin/discount/")]
 [ApiVersion("2.0")]
 public class DiscountAdminController : ControllerBase
 {
@@ -19,8 +21,7 @@ public class DiscountAdminController : ControllerBase
     }
 
     [HttpPost]
-    [Route("/admin/discount/create")]
-    [ValidateAntiForgeryToken]
+    [Route("create")]
     public async Task<IActionResult> Create(DiscountRequestDto discountRequestDto)
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;
@@ -33,14 +34,14 @@ public class DiscountAdminController : ControllerBase
     }
 
     [HttpGet]
-    [Route("admin/discount/get-all")]
+    [Route("get-all")]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _discountRepository.GetAll());
     }
 
     [HttpGet]
-    [Route("admin/discount/get-by-id")]
+    [Route("get-by-id")]
     public async Task<IActionResult> GetById(int? id)
     {
         var result = await _discountRepository.GetById(id);
@@ -48,19 +49,18 @@ public class DiscountAdminController : ControllerBase
         {
             return Ok(result);
         }
-        return BadRequest(result);
+        return BadRequest(new StatusDto { StatusCode = 0, Message = "Id not found" });
     }
 
     [HttpGet]
-    [Route("admin/discount/get-by-search")]
+    [Route("get-by-search")]
     public IActionResult GetBySearch(string? discountCode, string? name, decimal? percentDiscount, DateTime? startAt, DateTime? endAt, string? nameType, string? creatorEmail)
     {
         return Ok(_discountRepository.GetBySearch(discountCode, name, percentDiscount, startAt, endAt, nameType, creatorEmail));
     }
 
     [HttpPut]
-    [Route("admin/discount/update")]
-    [ValidateAntiForgeryToken]
+    [Route("update")]
     public async Task<IActionResult> Update(int? id, [FromBody] DiscountUpdateDto discountUpdateDto)
     {
         var result = await _discountRepository.Update(id, discountUpdateDto);
@@ -72,7 +72,7 @@ public class DiscountAdminController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("admin/discount/delete")]
+    [Route("delete")]
     public async Task<IActionResult> Delete(int? id)
     {
         var result = await _discountRepository.Delete(id);

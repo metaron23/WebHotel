@@ -3,43 +3,46 @@ using WebHotel.DTO;
 using WebHotel.DTO.AuthenticationDtos;
 using WebHotel.Repository.AdminRepository.AuthenRepository;
 
-namespace WebHotel.Controllers.AdminController;
-
-[ApiController]
-[ApiVersion("2.0")]
-public class AuthenAdminController : ControllerBase
+namespace WebHotel.Controllers.AdminController
 {
-    private readonly IAuthenAdminRepository _authenAdminRepository;
 
-    public AuthenAdminController(IAuthenAdminRepository authenAdminRepository)
+    [ApiController]
+    [Route("v{version:apiVersion}/admin/")]
+    [ApiVersion("2.0")]
+    public class AuthenAdminController : ControllerBase
     {
-        _authenAdminRepository = authenAdminRepository;
-    }
+        private readonly IAuthenAdminRepository _authenAdminRepository;
 
-    [HttpPost]
-    [Route("/admin/login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto model)
-    {
-        var result = await _authenAdminRepository.Login(model);
-        if (result is LoginResponseDto)
+        public AuthenAdminController(IAuthenAdminRepository authenAdminRepository)
         {
-            return Ok(result);
+            _authenAdminRepository = authenAdminRepository;
         }
-        else
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login123([FromBody] LoginDto model)
         {
+            var result = await _authenAdminRepository.Login(model);
+            if (result is LoginResponseDto)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> RegistrationAdmin([FromBody] RegisterAdminDto model)
+        {
+            StatusDto result = await _authenAdminRepository.RegistrationAdmin(model);
+            if (result.StatusCode == 1)
+            {
+                return Ok(result);
+            }
             return BadRequest(result);
         }
-    }
-
-    [HttpPost]
-    [Route("/admin/register")]
-    public async Task<IActionResult> RegistrationAdmin([FromBody] RegisterAdminDto model)
-    {
-        StatusDto result = await _authenAdminRepository.RegistrationAdmin(model);
-        if (result.StatusCode == 1)
-        {
-            return Ok(result);
-        }
-        return BadRequest(result);
     }
 }

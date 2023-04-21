@@ -6,7 +6,7 @@ using WebHotel.DTO.RoomDtos;
 
 namespace WebHotel.Repository.UserRepository.RoomUserRepository;
 
-public class RoomUserRepository
+public class RoomUserRepository : IRoomUserRepository
 {
     private readonly MyDBContext _context;
     private readonly IMapper _mapper;
@@ -63,6 +63,11 @@ public class RoomUserRepository
     public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber)
     {
         var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).AsNoTracking().AsQueryable();
+        if (checkIn is not null && checkOut is not null)
+        {
+            var reservation = _context.Reservations.Where(a => a.EndDate <= checkIn || a.StartDate >= checkOut).Select(a => a.RoomId);
+            roomBasesQuery = _context.Rooms.Where(a => reservation.Contains(a.Id));
+        }
         if (price != null)
         {
             roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice <= price || a.DiscountPrice > 0 && a.DiscountPrice <= price);
@@ -99,9 +104,14 @@ public class RoomUserRepository
     public async Task<RoomSearchDto> GetRoomSearch()
     {
         var roomSearch = new RoomSearchDto();
-        roomSearch.MaxPerson = await _context.Rooms.MaxAsync(a => a.PeopleNumber);
-        roomSearch.MaxPrice = await _context.Rooms.MaxAsync(a => a.CurrentPrice);
-        roomSearch.ServiceAttachs = await _context.ServiceAttaches.Select(a => a.Name).ToListAsync();
-        return roomSearch;
+        var room = _context.Rooms;
+        if (await room.AnyAsync())
+        {
+            roomSearch.MaxPerson = await room.MaxAsync(a => a.PeopleNumber);
+            roomSearch.MaxPrice = await room.MaxAsync(a => a.CurrentPrice);
+            roomSearch.ServiceAttachs = await _context.ServiceAttaches.Select(a => a.Name).ToListAsync();
+            return roomSearch;
+        }
+        return default!;
     }
 }

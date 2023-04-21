@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Database.Models;
 
-public class ApplicationUser : IdentityUser<string>
+public class ApplicationUser : IdentityUser
 {
     public string Name { get; set; } = null!;
     public string? Address { get; set; }
@@ -36,7 +36,7 @@ public class ApplicationUser : IdentityUser<string>
     public virtual ICollection<Notification> Notifications { get; } = new List<Notification>();
 }
 
-public class ApplicationRole : IdentityRole<string>
+public class ApplicationRole : IdentityRole
 {
     public ApplicationRole() : base()
     {

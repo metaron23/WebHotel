@@ -27,11 +27,22 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
             if (room is not null)
             {
                 _mapper.Map(roomCreateDto, room);
+                if (roomCreateDto.RoomPicture is not null)
+                {
+                    var checkSendFile = await _fileService.SendFile("Room/" + roomCreateDto.RoomNumber, roomCreateDto.RoomPicture!);
+                    if (checkSendFile.Status == 1)
+                    {
+                        room.RoomPicture = checkSendFile.Url;
+                    }
+                    else
+                    {
+                        return new StatusDto { StatusCode = 0, Message = checkSendFile.Errors };
+                    }
+                }
                 try
                 {
-                    await _context.AddAsync(room);
                     await _context.SaveChangesAsync();
-                    return new StatusDto { StatusCode = 1, Message = "Created successfully" };
+                    return new StatusDto { StatusCode = 1, Message = "Updated successfully" };
                 }
                 catch (Exception ex)
                 {
@@ -39,7 +50,6 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 }
             }
             return new StatusDto { StatusCode = 0, Message = "Room not exists" };
-
         }
 
         public async Task<StatusDto> Delete(string? id)
@@ -87,6 +97,79 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
             {
                 return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
             }
+        }
+
+        public async Task CheckDiscount(Room room)
+        {
+            var discount = await _context.DiscountRoomDetails.Include(a => a.Discount)
+                .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
+            if (discount != null)
+            {
+                room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
+            }
+        }
+
+        public async Task<IEnumerable<RoomResponseDto>> GetAll()
+        {
+            var roomBases = await _context.Rooms.Include(a => a.RoomType).AsNoTracking().ToListAsync();
+            if (roomBases == null)
+            {
+                return default!;
+            }
+            var roomResponse = new RoomResponseDto();
+            var roomResponses = new List<RoomResponseDto>();
+            foreach (var item in roomBases)
+            {
+                await CheckDiscount(item);
+                roomResponse = _mapper.Map<RoomResponseDto>(item);
+                roomResponse.RoomTypeName = item.RoomType.TypeName;
+                roomResponses.Add(roomResponse);
+            }
+            return roomResponses;
+        }
+
+        public async Task<RoomResponseDto> GetById(string id)
+        {
+            var roomBases = _context.Rooms.Include(a => a.RoomType).AsNoTracking().SingleOrDefault(a => a.Id == id);
+            if (roomBases != null)
+            {
+                var roomResponse = new RoomResponseDto();
+                await CheckDiscount(roomBases);
+                roomResponse = _mapper.Map<RoomResponseDto>(roomBases);
+                roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
+                return roomResponse;
+            }
+            return default!;
+        }
+
+        public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, string? querySearch)
+        {
+            var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).AsNoTracking().AsQueryable();
+            decimal searchDecimal;
+            if (checkIn is not null && checkOut is not null)
+            {
+                var reservation = _context.Reservations.Where(a => a.EndDate <= checkIn || a.StartDate >= checkOut).Select(a => a.RoomId);
+                roomBasesQuery = _context.Rooms.Where(a => reservation.Contains(a.Id));
+            }
+            if (Decimal.TryParse(querySearch, out searchDecimal))
+            {
+                roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice == searchDecimal || (a.DiscountPrice > 0 && a.DiscountPrice == searchDecimal) || a.StarSum == (int)searchDecimal || a.PeopleNumber == (int)searchDecimal || a.RoomType.TypeName == querySearch);
+            }
+            var roomResponse = new RoomResponseDto();
+            var roomResponses = new List<RoomResponseDto>();
+            var roomBases = await roomBasesQuery.ToListAsync();
+            if (roomBases == null)
+            {
+                return default!;
+            }
+            foreach (var item in roomBases)
+            {
+                await CheckDiscount(item);
+                roomResponse = _mapper.Map<RoomResponseDto>(item);
+                roomResponse.RoomTypeName = item.RoomType.TypeName;
+                roomResponses.Add(roomResponse);
+            }
+            return roomResponses;
         }
     }
 }

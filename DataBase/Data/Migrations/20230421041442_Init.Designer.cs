@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20230418044538_add-table-notification2")]
-    partial class addtablenotification2
+    [Migration("20230421041442_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

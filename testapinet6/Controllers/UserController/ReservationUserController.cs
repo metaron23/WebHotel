@@ -9,6 +9,8 @@ namespace WebHotel.Controllers.UserController;
 [ApiController]
 [Authorize(Roles = "User")]
 [ApiVersion("1.0")]
+[Route("user/")]
+
 public class ReservationUserController : ControllerBase
 {
     private readonly IReservationUserRepository _reservationRepository;
@@ -19,7 +21,7 @@ public class ReservationUserController : ControllerBase
     }
 
     [HttpPost]
-    [Route("/user/reservation/create")]
+    [Route("reservation/create")]
     public async Task<IActionResult> Create(ReservationCreateDto reservationCreateDto)
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;

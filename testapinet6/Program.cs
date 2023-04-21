@@ -46,14 +46,16 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddApiVersioning(opt =>
 {
+    opt.ReportApiVersions = true;
     opt.DefaultApiVersion = new ApiVersion(1, 0);
     opt.AssumeDefaultVersionWhenUnspecified = true;
-    opt.ReportApiVersions = true;
     opt.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
 
 builder.Services.AddVersionedApiExplorer(setup =>
 {
+    setup.AssumeDefaultVersionWhenUnspecified = true;
+    setup.DefaultApiVersion = new ApiVersion(1, 0);
     setup.GroupNameFormat = "'v'VVV";
     setup.SubstituteApiVersionInUrl = true;
 });
@@ -69,9 +71,6 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
-
-
-
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

@@ -1,4 +1,5 @@
-﻿using WebHotel.Repository.AdminRepository.DiscountRepository;
+﻿using WebHotel.Repository.AdminRepository.AuthenRepository;
+using WebHotel.Repository.AdminRepository.DiscountRepository;
 using WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository;
 using WebHotel.Repository.AdminRepository.DiscountTypeRepository;
 using WebHotel.Repository.AdminRepository.RoomRepository;
@@ -22,13 +23,17 @@ namespace WebHotel.Startup
 
             services.AddScoped<IAuthenUserRepository, AuthenUserRepository>();
 
+            services.AddScoped<IAuthenAdminRepository, AuthenAdminRepository>();
+
             services.AddScoped<IMailService, MailService>();
 
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
             services.AddScoped<IFileService, FileService>();
 
-            services.AddScoped<IRoomUserRepository, RoomAdminRepository>();
+            services.AddScoped<IRoomAdminRepository, RoomAdminRepository>();
+
+            services.AddScoped<IRoomUserRepository, RoomUserRepository>();
 
             services.AddScoped<IRoomStarRepository, RoomStarRepository>();
 

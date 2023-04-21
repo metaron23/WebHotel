@@ -29,7 +29,10 @@ namespace WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository
                     await _context.SaveChangesAsync();
                     return new StatusDto { StatusCode = 1, Message = "Created successfully" };
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                }
             }
             return new StatusDto { StatusCode = 0, Message = "Create discount error" };
         }

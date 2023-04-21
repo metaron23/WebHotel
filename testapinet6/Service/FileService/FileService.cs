@@ -27,7 +27,6 @@ namespace WebHotel.Service.FileService
         {
             var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
             var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-            var cancellation = new CancellationTokenSource();
 
             var task = new FirebaseStorage(
                 Bucket,
@@ -55,12 +54,12 @@ namespace WebHotel.Service.FileService
             FileStream stream;
             if (file.Length > 0)
             {
-                string path_root = Path.Combine(_environment.WebRootPath, "Images");
+                string path_root = Path.Combine(_environment.ContentRootPath, "Images");
                 if (!Directory.Exists(path_root))
                 {
                     Directory.CreateDirectory(path_root);
                 }
-                string path = Path.Combine(_environment.WebRootPath, "Images", file.FileName);
+                string path = Path.Combine(_environment.ContentRootPath, "Images", file.FileName);
                 using (stream = new FileStream(path, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
@@ -68,7 +67,6 @@ namespace WebHotel.Service.FileService
                 stream = new FileStream(path, FileMode.Open);
                 var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
                 var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-                var cancellation = new CancellationTokenSource();
 
                 var task = new FirebaseStorage(
                     Bucket,
@@ -79,7 +77,7 @@ namespace WebHotel.Service.FileService
                     })
                     .Child(rootFolder)
                     .Child(file.FileName)
-                    .PutAsync(stream, cancellation.Token);
+                    .PutAsync(stream);
                 try
                 {
                     string link = await task;
@@ -102,7 +100,6 @@ namespace WebHotel.Service.FileService
         {
             var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
             var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-            var cancellation = new CancellationTokenSource();
 
             var task = new FirebaseStorage(
                 Bucket,

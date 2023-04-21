@@ -7,6 +7,7 @@ namespace WebHotel.Controllers.BaseController;
 
 [ApiController]
 [ApiVersion("3.0")]
+[Route("v{version:apiVersion}/token/")]
 public class TokenController : ControllerBase
 {
     private readonly ITokenRepository _service;
@@ -17,7 +18,7 @@ public class TokenController : ControllerBase
     }
 
     [HttpPost]
-    [Route("user/token/refresh")]
+    [Route("refresh")]
     public IActionResult Refresh(TokenRequestDto tokenRequest)
     {
         var token = _service.RefreshToken(tokenRequest);
@@ -29,7 +30,7 @@ public class TokenController : ControllerBase
     }
 
     [HttpPost]
-    [Route("user/token/revoke")]
+    [Route("revoke")]
     public IActionResult Revoke(TokenRequestDto tokenRequest)
     {
         bool check = _service.Revoke(tokenRequest);

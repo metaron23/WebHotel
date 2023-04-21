@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Database.Data.Migrations
+namespace DataBase.Data.Migrations
 {
-    /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -248,6 +247,29 @@ namespace Database.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notification",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    Status = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "1"),
+                    Link = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notification", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notification_AspNetUsers",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Discount",
                 columns: table => new
                 {
@@ -260,6 +282,7 @@ namespace Database.Data.Migrations
                     StartAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     EndAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     IsPermanent = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((0))"),
+                    Active = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((1))"),
                     DiscountTypeId = table.Column<int>(type: "int", nullable: false),
                     CreatorId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
                 },
@@ -347,6 +370,11 @@ namespace Database.Data.Migrations
                 {
                     table.PrimaryKey("PK__Discount__3214EC07F7AD559D", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_DiscountService_AspNetUsers",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_DiscountServiceDetail_Discount",
                         column: x => x.DiscountId,
                         principalTable: "Discount",
@@ -355,11 +383,6 @@ namespace Database.Data.Migrations
                         name: "FK_DiscountServiceDetail_ServiceRoom",
                         column: x => x.ServiceId,
                         principalTable: "ServiceRoom",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DiscountService_AspNetUsers",
-                        column: x => x.CreatorId,
-                        principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
 
@@ -406,6 +429,10 @@ namespace Database.Data.Migrations
                     CreatedAt = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
                     ReservationPrice = table.Column<decimal>(type: "decimal(19,2)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoomId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false)
                 },
@@ -699,6 +726,11 @@ namespace Database.Data.Migrations
                 column: "ReservationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notification_UserId",
+                table: "Notification",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderService_ReservationId",
                 table: "OrderService",
                 column: "ReservationId");
@@ -789,7 +821,6 @@ namespace Database.Data.Migrations
                 unique: true);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -818,6 +849,9 @@ namespace Database.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "InvoiceReservation");
+
+            migrationBuilder.DropTable(
+                name: "Notification");
 
             migrationBuilder.DropTable(
                 name: "OrderService");
