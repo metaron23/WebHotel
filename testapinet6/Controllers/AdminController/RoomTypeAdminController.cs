@@ -29,7 +29,7 @@ public class RoomTypeAdminController : ControllerBase
         return BadRequest(result);
     }
 
-    [HttpPut]
+    [HttpPost]
     [Route("update")]
     public async Task<IActionResult> Update([FromQuery] int? id, [FromBody] RoomTypeRequestDto roomTypeRequestDto)
     {
@@ -53,9 +53,9 @@ public class RoomTypeAdminController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete]
+    [HttpGet]
     [Route("delete")]
-    public async Task<StatusDto> Delete(int? id)
+    public async Task<StatusDto> Delete([FromQuery] int? id)
     {
         return await _roomTypeRepository.Delete(id);
     }

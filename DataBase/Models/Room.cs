@@ -14,11 +14,15 @@ public partial class Room
 
     public string? RoomPicture { get; set; }
 
+    public string? RoomPictures { get; set; }
+
     public int? StarSum { get; set; }
 
     public int PeopleNumber { get; set; }
 
-    public int NumberOfBed { get; set; }
+    public int NumberOfSimpleBed { get; set; }
+
+    public int NumberOfDoubleBed { get; set; }
 
     public decimal CurrentPrice { get; set; }
 
@@ -26,7 +30,7 @@ public partial class Room
 
     public DateTime? CreatedAt { get; set; }
 
-    public byte[]? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public int RoomTypeId { get; set; }
 

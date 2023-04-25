@@ -7,6 +7,8 @@ using WebHotel.DTO.ReservationDtos;
 using WebHotel.DTO.RoomDtos;
 using WebHotel.DTO.RoomStarDtos;
 using WebHotel.DTO.RoomTypeDtos;
+using WebHotel.DTO.ServiceAttachDetailDtos;
+using WebHotel.DTO.ServiceAttachDtos;
 using WebHotel.DTO.TokenDtos;
 using WebHotel.DTO.UserDtos;
 
@@ -47,6 +49,14 @@ namespace WebHotel.Helper
                 .ForMember(destination => destination.Roles, options => options.MapFrom(source => source.Creator.UserRoles.Select(a => a.Role!.Name).ToList()));
 
             CreateMap<DiscountType, DiscountTypeResponseDto>().ReverseMap();
+
+            CreateMap<ServiceAttach, ServiceAttachRequestDto>().ReverseMap();
+
+            CreateMap<ServiceAttachResponseDto, ServiceAttach>().ReverseMap();
+
+            CreateMap<ServiceAttachDetail, ServiceAttachDetailRequestDto>().ReverseMap();
+
+            CreateMap<ServiceAttachDetailResponseDto, ServiceAttachDetail>().ReverseMap();
         }
     }
 }

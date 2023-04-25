@@ -17,7 +17,7 @@ public class DiscountTypeAdminController : ControllerBase
         _discountType = discountType;
     }
 
-    [HttpPut]
+    [HttpPost]
     [Route("update")]
     public async Task<IActionResult> Update([FromQuery] int? id, [FromBody] DiscountTypeResponseDto discountTypeDto)
     {
@@ -53,9 +53,9 @@ public class DiscountTypeAdminController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete]
+    [HttpGet]
     [Route("delete")]
-    public async Task<StatusDto> Delete(int? id)
+    public async Task<StatusDto> Delete([FromQuery] int? id)
     {
         return await _discountType.Delete(id);
     }

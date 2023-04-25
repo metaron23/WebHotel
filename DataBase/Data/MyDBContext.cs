@@ -380,29 +380,44 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.Property(e => e.Id)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(newid())");
+
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+                .HasColumnType("datetime")
+                .ValueGeneratedOnAdd();
+
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .ValueGeneratedOnAddOrUpdate();
+
             entity.Property(e => e.CurrentPrice).HasColumnType("decimal(12, 2)");
+
             entity.Property(e => e.Description).HasColumnType("ntext");
+
             entity.Property(e => e.DiscountPrice).HasColumnType("decimal(19, 2)");
+
             entity.Property(e => e.PeopleNumber).HasDefaultValueSql("((1))");
+
             entity.Property(e => e.IsActive)
                 .IsRequired()
                 .HasDefaultValueSql("('true')");
+
             entity.Property(e => e.Name).HasMaxLength(255);
+
             entity.Property(e => e.RoomNumber)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+
             entity.Property(e => e.RoomPicture)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+
             entity.Property(e => e.StarAmount).HasDefaultValueSql("((0))");
+
             entity.Property(e => e.StarSum).HasDefaultValueSql("((0))");
+
             entity.Property(e => e.StarValue).HasDefaultValueSql("((0))");
-            entity.Property(e => e.UpdatedAt)
-                .IsRowVersion()
-                .IsConcurrencyToken();
 
             entity.HasOne(d => d.RoomType).WithMany(p => p.Rooms)
                 .HasForeignKey(d => d.RoomTypeId)

@@ -4,6 +4,7 @@ using Database.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230421100209_alter_room_pictures")]
+    partial class alter_room_pictures
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -746,10 +748,7 @@ namespace DataBase.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("NumberOfDoubleBed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfSimpleBed")
+                    b.Property<int>("NumberOfBed")
                         .HasColumnType("int");
 
                     b.Property<int>("PeopleNumber")
@@ -789,10 +788,10 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("((0))");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<byte[]>("UpdatedAt")
+                        .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id")
                         .HasName("PK__Room__3214EC078410FF00");

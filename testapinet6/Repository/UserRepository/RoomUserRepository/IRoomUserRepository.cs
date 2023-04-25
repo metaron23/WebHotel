@@ -6,7 +6,7 @@ namespace WebHotel.Repository.UserRepository.RoomUserRepository
     {
         Task<IEnumerable<RoomResponseDto>> GetAll();
 
-        Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber);
+        Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber);
 
         Task<RoomResponseDto> GetById(string id);
         Task<RoomSearchDto> GetRoomSearch();

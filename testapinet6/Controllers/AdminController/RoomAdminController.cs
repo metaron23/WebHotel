@@ -55,7 +55,7 @@ public class RoomAdminController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut]
+    [HttpPost]
     [Route("update")]
     public async Task<IActionResult> Update(string? id, [FromForm] RoomRequestDto roomCreateDto)
     {
@@ -67,9 +67,9 @@ public class RoomAdminController : ControllerBase
         return BadRequest(result);
     }
 
-    [HttpDelete]
+    [HttpGet]
     [Route("delete")]
-    public async Task<IActionResult> Delete(string? id)
+    public async Task<IActionResult> Delete([FromQuery] string? id)
     {
         var result = await _roomAdminRepository.Delete(id);
         if (result.StatusCode == 1)

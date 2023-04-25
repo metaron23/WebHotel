@@ -1,4 +1,7 @@
-﻿namespace WebHotel.DTO.RoomDtos
+﻿using WebHotel.DTO.RoomTypeDtos;
+using WebHotel.DTO.ServiceAttachDtos;
+
+namespace WebHotel.DTO.RoomDtos
 {
     public class RoomSearchDto
     {
@@ -6,6 +9,8 @@
 
         public decimal MaxPrice { get; set; }
 
-        public List<string>? ServiceAttachs { get; set; }
+        public List<RoomTypeResponseDto>? RoomTypes { get; set; }
+
+        public List<ServiceAttachResponseDto>? ServiceAttachs { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
             _context = context;
         }
 
-        public async Task<StatusDto> Create(ServiceAttachDto serviceAttachDto)
+        public async Task<StatusDto> Create(ServiceAttachRequestDto serviceAttachDto)
         {
             var serviceAttach = _mapper.Map<ServiceAttach>(serviceAttachDto);
             try
@@ -33,14 +33,29 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
             }
         }
 
-        public bool Delete(int? id)
+        public async Task<StatusDto> Delete(int? id)
         {
-            throw new NotImplementedException();
+            var serviceAttach = await _context.ServiceAttaches.SingleOrDefaultAsync(a => a.Id == id);
+            if (serviceAttach is not null)
+            {
+                try
+                {
+                    _context.ServiceAttaches.Remove(serviceAttach);
+                    await _context.SaveChangesAsync();
+                    return new StatusDto { StatusCode = 1, Message = "Successfull deleted " };
+                }
+                catch (Exception ex)
+                {
+                    return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                }
+            }
+            return new StatusDto { StatusCode = 0, Message = "Id not found!" };
         }
 
-        public async Task<IEnumerable<ServiceAttach>> GetAll()
+        public async Task<IEnumerable<ServiceAttachResponseDto>> GetAll()
         {
-            return await _context.ServiceAttaches.AsNoTracking().ToListAsync();
+            var serviceAttach = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.AsNoTracking().ToListAsync());
+            return serviceAttach;
         }
     }
 }

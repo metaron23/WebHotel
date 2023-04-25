@@ -36,9 +36,9 @@ public partial class RoomUserController : ControllerBase
 
     [HttpGet]
     [Route("room/get-all-by")]
-    public async Task<IActionResult> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber)
+    public async Task<IActionResult> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber)
     {
-        var result = await _roomUserRepository.GetAllBy(checkIn, checkOut, price, typeRoomId, star, peopleNumber);
+        var result = await _roomUserRepository.GetAllBy(checkIn, checkOut, price, typeRoomName, star, peopleNumber);
         return Ok(result);
     }
 

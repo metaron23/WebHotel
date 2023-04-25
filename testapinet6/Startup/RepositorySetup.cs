@@ -5,6 +5,8 @@ using WebHotel.Repository.AdminRepository.DiscountTypeRepository;
 using WebHotel.Repository.AdminRepository.RoomRepository;
 using WebHotel.Repository.AdminRepository.RoomStarRepository;
 using WebHotel.Repository.AdminRepository.RoomTypeRepository;
+using WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository;
+using WebHotel.Repository.AdminRepository.ServiceAttachRepository;
 using WebHotel.Repository.UserRepository.AuthenRepository;
 using WebHotel.Repository.UserRepository.ReservationRepository;
 using WebHotel.Repository.UserRepository.RoomUserRepository;
@@ -48,6 +50,10 @@ namespace WebHotel.Startup
             services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
             services.AddScoped<IDiscountTypeAdminRepository, DiscountTypeAdminRepository>();
+
+            services.AddScoped<IServiceAttachRepository, ServiceAttachRepository>();
+
+            services.AddScoped<IServiceAttachDetailRepository, ServiceAttachDetailRepository>();
 
             return services;
         }

@@ -1,4 +1,4 @@
-﻿using Database.Models;
+﻿using WebHotel.DTO.ServiceAttachDtos;
 
 namespace WebHotel.DTO.RoomDtos
 {
@@ -16,13 +16,17 @@ namespace WebHotel.DTO.RoomDtos
 
         public string? RoomPicture { get; set; }
 
+        public string? RoomPictures { get; set; }
+
         public int? StarAmount { get; set; }
 
         public float? StarSum { get; set; }
 
         public int PeopleNumber { get; set; }
 
-        public int NumberOfBed { get; set; }
+        public int NumberOfSimpleBed { get; set; }
+
+        public int NumberOfDoubleBed { get; set; }
 
         public decimal CurrentPrice { get; set; }
 
@@ -32,6 +36,6 @@ namespace WebHotel.DTO.RoomDtos
 
         public string? RoomTypeName { get; set; }
 
-        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public List<ServiceAttachResponseDto>? ServiceAttachs { get; set; }
     }
 }

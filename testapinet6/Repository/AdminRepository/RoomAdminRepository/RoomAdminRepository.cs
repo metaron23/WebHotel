@@ -2,8 +2,10 @@
 using Database.Data;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using WebHotel.DTO;
 using WebHotel.DTO.RoomDtos;
+using WebHotel.DTO.ServiceAttachDtos;
 using WebHotel.Service.FileService;
 
 namespace WebHotel.Repository.AdminRepository.RoomRepository
@@ -38,6 +40,23 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                     {
                         return new StatusDto { StatusCode = 0, Message = checkSendFile.Errors };
                     }
+                }
+                if (roomCreateDto.RoomPictures is not null)
+                {
+                    var listImage = new List<string>();
+                    foreach (var item in roomCreateDto.RoomPictures)
+                    {
+                        var checkSendFile = await _fileService.SendFile("RoomDetail/" + roomCreateDto.RoomNumber, item);
+                        if (checkSendFile.Status == 1)
+                        {
+                            listImage.Add(checkSendFile.Url!);
+                        }
+                        else
+                        {
+                            return new StatusDto { StatusCode = 0, Message = checkSendFile.Errors };
+                        }
+                    }
+                    room.RoomPictures = JsonConvert.SerializeObject(listImage);
                 }
                 try
                 {
@@ -89,6 +108,23 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                         return new StatusDto { StatusCode = 0, Message = checkSendFile.Errors };
                     }
                 }
+                if (roomCreateDto.RoomPictures is not null)
+                {
+                    var listImage = new List<string>();
+                    foreach (var item in roomCreateDto.RoomPictures)
+                    {
+                        var checkSendFile = await _fileService.SendFile("RoomDetail/" + roomCreateDto.RoomNumber, item);
+                        if (checkSendFile.Status == 1)
+                        {
+                            listImage.Add(checkSendFile.Url!);
+                        }
+                        else
+                        {
+                            return new StatusDto { StatusCode = 0, Message = checkSendFile.Errors };
+                        }
+                    }
+                    room.RoomPictures = JsonConvert.SerializeObject(listImage);
+                }
                 await _context.AddAsync(room);
                 await _context.SaveChangesAsync();
                 return new StatusDto { StatusCode = 1, Message = "Room created successfully!" };
@@ -111,7 +147,8 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<IEnumerable<RoomResponseDto>> GetAll()
         {
-            var roomBases = await _context.Rooms.Include(a => a.RoomType).AsNoTracking().ToListAsync();
+            var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().ToListAsync();
+
             if (roomBases == null)
             {
                 return default!;
@@ -123,6 +160,8 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 await CheckDiscount(item);
                 roomResponse = _mapper.Map<RoomResponseDto>(item);
                 roomResponse.RoomTypeName = item.RoomType.TypeName;
+                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+                roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }
             return roomResponses;
@@ -130,13 +169,15 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<RoomResponseDto> GetById(string id)
         {
-            var roomBases = _context.Rooms.Include(a => a.RoomType).AsNoTracking().SingleOrDefault(a => a.Id == id);
+            var roomBases = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().SingleOrDefault(a => a.Id == id);
             if (roomBases != null)
             {
                 var roomResponse = new RoomResponseDto();
                 await CheckDiscount(roomBases);
                 roomResponse = _mapper.Map<RoomResponseDto>(roomBases);
                 roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
+                var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.RoomTypeId);
+                roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 return roomResponse;
             }
             return default!;
@@ -144,7 +185,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, string? querySearch)
         {
-            var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).AsNoTracking().AsQueryable();
+            var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().AsQueryable();
             decimal searchDecimal;
             if (checkIn is not null && checkOut is not null)
             {
@@ -153,8 +194,10 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
             }
             if (Decimal.TryParse(querySearch, out searchDecimal))
             {
-                roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice == searchDecimal || (a.DiscountPrice > 0 && a.DiscountPrice == searchDecimal) || a.StarSum == (int)searchDecimal || a.PeopleNumber == (int)searchDecimal || a.RoomType.TypeName == querySearch);
+                roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice == searchDecimal || (a.DiscountPrice > 0 && a.DiscountPrice == searchDecimal) || a.StarSum == (int)searchDecimal || a.PeopleNumber == (int)searchDecimal);
             }
+            roomBasesQuery = roomBasesQuery.Where(a => a.RoomType.TypeName.Contains(querySearch!) || a.RoomNumber.Contains(querySearch!) || a.Name.Contains(querySearch!));
+
             var roomResponse = new RoomResponseDto();
             var roomResponses = new List<RoomResponseDto>();
             var roomBases = await roomBasesQuery.ToListAsync();
@@ -167,6 +210,8 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 await CheckDiscount(item);
                 roomResponse = _mapper.Map<RoomResponseDto>(item);
                 roomResponse.RoomTypeName = item.RoomType.TypeName;
+                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+                roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }
             return roomResponses;

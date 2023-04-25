@@ -36,11 +36,11 @@ namespace WebHotel.Repository.UserRepository.ReservationRepository
 
                     var startDate = reservationCreateDto.StartDate!.Value;
 
-                    reservation.StartDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 5, 00, 00);
+                    reservation.StartDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 12, 00, 00);
 
                     reservation.EndDate = reservation.StartDate.AddDays((double)reservationCreateDto.NumberOfDay!);
 
-                    reservation.DepositEndAt = startDate.AddHours(1);
+                    reservation.DepositEndAt = startDate.AddMinutes(30);
 
                     reservation.ReservationPrice = reservation.RoomPrice * (decimal)reservation.NumberOfDay;
 

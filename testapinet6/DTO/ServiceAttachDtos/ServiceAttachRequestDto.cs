@@ -2,7 +2,7 @@
 
 namespace WebHotel.DTO.ServiceAttachDtos
 {
-    public class ServiceAttachDto
+    public class ServiceAttachRequestDto
     {
         [Required(ErrorMessage = "{0} is required")]
         public string? Name { get; set; }

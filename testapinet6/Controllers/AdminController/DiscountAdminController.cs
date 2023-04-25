@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebHotel.DTO;
+
 using WebHotel.DTO.DiscountDtos;
 using WebHotel.Repository.AdminRepository.DiscountRepository;
 
@@ -59,7 +60,7 @@ public class DiscountAdminController : ControllerBase
         return Ok(_discountRepository.GetBySearch(discountCode, name, percentDiscount, startAt, endAt, nameType, creatorEmail));
     }
 
-    [HttpPut]
+    [HttpPost]
     [Route("update")]
     public async Task<IActionResult> Update(int? id, [FromBody] DiscountUpdateDto discountUpdateDto)
     {
@@ -71,9 +72,9 @@ public class DiscountAdminController : ControllerBase
         return BadRequest(result);
     }
 
-    [HttpDelete]
+    [HttpGet]
     [Route("delete")]
-    public async Task<IActionResult> Delete(int? id)
+    public async Task<IActionResult> Delete([FromQuery] int? id)
     {
         var result = await _discountRepository.Delete(id);
         if (result.StatusCode == 1)

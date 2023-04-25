@@ -3,6 +3,8 @@ using Database.Data;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 using WebHotel.DTO.RoomDtos;
+using WebHotel.DTO.RoomTypeDtos;
+using WebHotel.DTO.ServiceAttachDtos;
 
 namespace WebHotel.Repository.UserRepository.RoomUserRepository;
 
@@ -60,7 +62,7 @@ public class RoomUserRepository : IRoomUserRepository
         return default!;
     }
 
-    public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, int? typeRoomId, float? star, int? peopleNumber)
+    public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber)
     {
         var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).AsNoTracking().AsQueryable();
         if (checkIn is not null && checkOut is not null)
@@ -72,9 +74,9 @@ public class RoomUserRepository : IRoomUserRepository
         {
             roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice <= price || a.DiscountPrice > 0 && a.DiscountPrice <= price);
         }
-        if (typeRoomId != null)
+        if (typeRoomName != null)
         {
-            roomBasesQuery = roomBasesQuery.Where(a => a.RoomTypeId == typeRoomId);
+            roomBasesQuery = roomBasesQuery.Include(a => a.RoomType).Where(a => a.RoomType.TypeName == typeRoomName);
         }
         if (star != null)
         {
@@ -109,7 +111,8 @@ public class RoomUserRepository : IRoomUserRepository
         {
             roomSearch.MaxPerson = await room.MaxAsync(a => a.PeopleNumber);
             roomSearch.MaxPrice = await room.MaxAsync(a => a.CurrentPrice);
-            roomSearch.ServiceAttachs = await _context.ServiceAttaches.Select(a => a.Name).ToListAsync();
+            roomSearch.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.ToListAsync());
+            roomSearch.RoomTypes = _mapper.Map<List<RoomTypeResponseDto>>(await _context.RoomTypes.ToListAsync());
             return roomSearch;
         }
         return default!;
