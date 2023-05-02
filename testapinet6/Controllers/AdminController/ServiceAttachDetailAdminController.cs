@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO.ServiceAttachDetailDtos;
 using WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository;
 
@@ -7,6 +8,7 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/service-attach-detail/")]
+[Authorize(Roles = "Admin")]
 public class ServiceAttachDetailAdminController : ControllerBase
 {
     private readonly IServiceAttachDetailRepository _serviceAttachDetailRepository;

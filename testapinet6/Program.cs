@@ -31,7 +31,7 @@ builder.Services.AddControllers();
 
 #region DB Context
 builder.Services.AddDbContext<MyDBContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection")));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"), o => o.CommandTimeout(300)));
 #endregion
 
 #region Service Custom

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
 using WebHotel.DTO.TokenDtos;
 using WebHotel.Service.TokenRepository;
@@ -7,6 +8,7 @@ namespace WebHotel.Controllers.BaseController;
 
 [ApiController]
 [ApiVersion("3.0")]
+[Authorize]
 [Route("v{version:apiVersion}/token/")]
 public class TokenController : ControllerBase
 {

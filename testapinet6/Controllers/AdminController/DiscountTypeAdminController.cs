@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
 using WebHotel.DTO.DiscountTypeDtos;
 using WebHotel.Repository.AdminRepository.DiscountTypeRepository;
@@ -8,6 +9,7 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/discount-type/")]
+[Authorize(Roles = "Admin")]
 public class DiscountTypeAdminController : ControllerBase
 {
     private readonly IDiscountTypeAdminRepository _discountType;

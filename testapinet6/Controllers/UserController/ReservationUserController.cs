@@ -7,8 +7,8 @@ using WebHotel.Repository.UserRepository.ReservationRepository;
 namespace WebHotel.Controllers.UserController;
 
 [ApiController]
-[Authorize(Roles = "User")]
 [ApiVersion("1.0")]
+[Authorize]
 [Route("user/")]
 
 public class ReservationUserController : ControllerBase

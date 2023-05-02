@@ -7,12 +7,12 @@ using WebHotel.DTO.ServiceAttachDtos;
 
 namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
 {
-    public class ServiceAttachRepository : IServiceAttachRepository
+    public class ServiceAttachAdminRepository : IServiceAttachAdminRepository
     {
         private readonly IMapper _mapper;
         private readonly MyDBContext _context;
 
-        public ServiceAttachRepository(IMapper mapper, MyDBContext context)
+        public ServiceAttachAdminRepository(IMapper mapper, MyDBContext context)
         {
             _mapper = mapper;
             _context = context;
@@ -54,7 +54,7 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
 
         public async Task<IEnumerable<ServiceAttachResponseDto>> GetAll()
         {
-            var serviceAttach = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.AsNoTracking().ToListAsync());
+            var serviceAttach = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.AsNoTracking().OrderByDescending(a => a.Id).ToListAsync());
             return serviceAttach;
         }
     }

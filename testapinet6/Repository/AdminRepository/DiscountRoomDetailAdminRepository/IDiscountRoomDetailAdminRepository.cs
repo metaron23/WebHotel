@@ -1,7 +1,7 @@
 ﻿using WebHotel.DTO;
 using WebHotel.DTO.DiscountRoomDetailDtos;
 
-namespace WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository
+namespace WebHotel.Repository.AdminRepository.DiscountRoomDetailAdminRepository
 {
     public interface IDiscountRoomDetailAdminRepository
     {

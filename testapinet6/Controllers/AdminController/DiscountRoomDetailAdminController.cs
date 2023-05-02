@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebHotel.DTO.DiscountRoomDetailDtos;
-using WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository;
+using WebHotel.Repository.AdminRepository.DiscountRoomDetailAdminRepository;
 
 namespace WebHotel.Controllers.AdminController;
 

@@ -12,6 +12,7 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 #pragma warning disable CS8618
     public MyDBContext(DbContextOptions<MyDBContext> options) : base(options)
     {
+
     }
 
     public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
@@ -65,6 +66,9 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
     public virtual DbSet<TokenInfo> TokenInfos { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<Blog> Blogs { get; set; }
+    public virtual DbSet<BlogType> BlogTypes { get; set; }
+    public virtual DbSet<BlogTypeDetail> BlogTypeDetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -512,6 +516,41 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
                 .HasConstraintName("FK_Notification_AspNetUsers");
 
             entity.Property(e => e.Status).HasDefaultValueSql("1");
+        });
+
+        modelBuilder.Entity<Blog>(entity =>
+        {
+            entity.ToTable("Blog");
+            entity.HasKey(e => e.Id).HasName("PK_Blog");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Poster).WithMany(p => p.Blogs)
+                .HasForeignKey(d => d.PosterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Blog_AspNetUsers");
+        });
+
+        modelBuilder.Entity<BlogType>(entity =>
+        {
+            entity.ToTable("BlogType");
+            entity.HasKey(e => e.Id).HasName("PK_BlogType");
+        });
+
+        modelBuilder.Entity<BlogTypeDetail>(entity =>
+        {
+            entity.ToTable("BlogTypeDetail");
+            entity.HasKey(e => e.Id).HasName("PK_BlogTypeDetail");
+
+            entity.HasOne(d => d.BlogType).WithMany(p => p.BlogTypeDetails)
+                .HasForeignKey(d => d.BlogTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogTypeDetail_BlogType");
+
+            entity.HasOne(d => d.Blog).WithMany(p => p.BlogTypeDetails)
+                .HasForeignKey(d => d.BlogTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BlogTypeDetail_Blog");
         });
 
         OnModelCreatingPartial(modelBuilder);

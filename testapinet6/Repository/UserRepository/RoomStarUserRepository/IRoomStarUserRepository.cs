@@ -1,9 +1,9 @@
 ﻿using WebHotel.DTO;
 using WebHotel.DTO.RoomStarDtos;
 
-namespace WebHotel.Repository.AdminRepository.RoomStarRepository
+namespace WebHotel.Repository.UserRepository.RoomStarRepository
 {
-    public interface IRoomStarRepository
+    public interface IRoomStarUserRepository
     {
         Task<StatusDto> Create(RoomStarRequestDto roomStarRequestDto);
     }

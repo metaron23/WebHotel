@@ -3,15 +3,16 @@ using Database.Data;
 using Database.Models;
 using WebHotel.DTO;
 using WebHotel.DTO.DiscountRoomDetailDtos;
+using WebHotel.Repository.AdminRepository.DiscountRoomDetailAdminRepository;
 
 namespace WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository
 {
-    public class DiscountRoomDetailADminRepository : IDiscountRoomDetailAdminRepository
+    public class DiscountRoomDetailAdminRepository : IDiscountRoomDetailAdminRepository
     {
         private readonly MyDBContext _context;
         private readonly IMapper _mapper;
 
-        public DiscountRoomDetailADminRepository(MyDBContext context, IMapper mapper)
+        public DiscountRoomDetailAdminRepository(MyDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

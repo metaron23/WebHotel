@@ -1,14 +1,17 @@
 ﻿using WebHotel.Repository.AdminRepository.AuthenRepository;
 using WebHotel.Repository.AdminRepository.DiscountRepository;
+using WebHotel.Repository.AdminRepository.DiscountReservationDetailAdminRepository;
+using WebHotel.Repository.AdminRepository.DiscountRoomDetailAdminRepository;
 using WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository;
+using WebHotel.Repository.AdminRepository.DiscountServiceDetailAdminRepository;
 using WebHotel.Repository.AdminRepository.DiscountTypeRepository;
 using WebHotel.Repository.AdminRepository.RoomRepository;
-using WebHotel.Repository.AdminRepository.RoomStarRepository;
 using WebHotel.Repository.AdminRepository.RoomTypeRepository;
 using WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository;
 using WebHotel.Repository.AdminRepository.ServiceAttachRepository;
 using WebHotel.Repository.UserRepository.AuthenRepository;
 using WebHotel.Repository.UserRepository.ReservationRepository;
+using WebHotel.Repository.UserRepository.RoomStarRepository;
 using WebHotel.Repository.UserRepository.RoomUserRepository;
 using WebHotel.Repository.UserRepository.UserProfileRepository;
 using WebHotel.Service.EmailRepository;
@@ -37,21 +40,25 @@ namespace WebHotel.Startup
 
             services.AddScoped<IRoomUserRepository, RoomUserRepository>();
 
-            services.AddScoped<IRoomStarRepository, RoomStarRepository>();
+            services.AddScoped<IRoomStarUserRepository, RoomStarUserRepository>();
 
-            services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+            services.AddScoped<IRoomTypeAdminRepository, RoomTypeAdminRepository>();
 
             services.AddScoped<IDiscountAdminRepository, DiscountAdminRepository>();
 
-            services.AddScoped<IDiscountRoomDetailAdminRepository, DiscountRoomDetailADminRepository>();
+            services.AddScoped<IDiscountRoomDetailAdminRepository, DiscountRoomDetailAdminRepository>();
+
+            services.AddScoped<IDiscountServiceDetailAdminRepository, DiscountServiceDetailAdminRepository>();
+
+            services.AddScoped<IDiscountReservationDetailAdminRepository, DiscountReservationDetailAdminRepository>();
 
             services.AddScoped<IReservationUserRepository, ReservationUserRepository>();
 
-            services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+            services.AddScoped<IRoomTypeAdminRepository, RoomTypeAdminRepository>();
 
             services.AddScoped<IDiscountTypeAdminRepository, DiscountTypeAdminRepository>();
 
-            services.AddScoped<IServiceAttachRepository, ServiceAttachRepository>();
+            services.AddScoped<IServiceAttachAdminRepository, ServiceAttachAdminRepository>();
 
             services.AddScoped<IServiceAttachDetailRepository, ServiceAttachDetailRepository>();
 

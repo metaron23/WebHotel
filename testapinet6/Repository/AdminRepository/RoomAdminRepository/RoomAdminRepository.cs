@@ -147,7 +147,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<IEnumerable<RoomResponseDto>> GetAll()
         {
-            var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().ToListAsync();
+            var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
 
             if (roomBases == null)
             {
@@ -185,18 +185,24 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, string? querySearch)
         {
-            var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().AsQueryable();
+            var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).AsQueryable();
             decimal searchDecimal;
             if (checkIn is not null && checkOut is not null)
             {
                 var reservation = _context.Reservations.Where(a => a.EndDate <= checkIn || a.StartDate >= checkOut).Select(a => a.RoomId);
                 roomBasesQuery = _context.Rooms.Where(a => reservation.Contains(a.Id));
             }
-            if (Decimal.TryParse(querySearch, out searchDecimal))
+            if (querySearch?.Length > 0)
             {
-                roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice == searchDecimal || (a.DiscountPrice > 0 && a.DiscountPrice == searchDecimal) || a.StarSum == (int)searchDecimal || a.PeopleNumber == (int)searchDecimal);
+                if (Decimal.TryParse(querySearch, out searchDecimal))
+                {
+                    roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice == searchDecimal || (a.DiscountPrice > 0 && a.DiscountPrice == searchDecimal) || a.StarSum == (int)searchDecimal || a.PeopleNumber == (int)searchDecimal || a.RoomNumber.Contains(querySearch!));
+                }
+                else
+                {
+                    roomBasesQuery = roomBasesQuery.Where(a => a.RoomType.TypeName.Contains(querySearch!) || a.RoomNumber.Contains(querySearch!) || a.Name.Contains(querySearch!));
+                }
             }
-            roomBasesQuery = roomBasesQuery.Where(a => a.RoomType.TypeName.Contains(querySearch!) || a.RoomNumber.Contains(querySearch!) || a.Name.Contains(querySearch!));
 
             var roomResponse = new RoomResponseDto();
             var roomResponses = new List<RoomResponseDto>();

@@ -8,16 +8,16 @@ using WebHotel.Service.FileService;
 namespace WebHotel.Controllers.UserController;
 
 [ApiController]
-[Authorize(Roles = "User")]
+[Authorize]
 [ApiVersion("1.0")]
 [Route("user/")]
-public class UserProfileController : ControllerBase
+public class ProfileUserController : ControllerBase
 {
     private readonly IUserProfileRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
 
-    public UserProfileController(IUserProfileRepository userRepository, IConfiguration configuration, IWebHostEnvironment environment)
+    public ProfileUserController(IUserProfileRepository userRepository, IConfiguration configuration, IWebHostEnvironment environment)
     {
         _userRepository = userRepository;
         _configuration = configuration;

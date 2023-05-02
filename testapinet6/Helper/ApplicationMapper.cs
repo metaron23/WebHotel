@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Database.Models;
+using WebHotel.DTO;
 using WebHotel.DTO.DiscountDtos;
+using WebHotel.DTO.DiscountReservationDetailDtos;
 using WebHotel.DTO.DiscountRoomDetailDtos;
+using WebHotel.DTO.DiscountServiceDetailDtos;
 using WebHotel.DTO.DiscountTypeDtos;
 using WebHotel.DTO.ReservationDtos;
 using WebHotel.DTO.RoomDtos;
@@ -40,6 +43,10 @@ namespace WebHotel.Helper
 
             CreateMap<DiscountRoomDetailRequest, DiscountRoomDetail>().ReverseMap();
 
+            CreateMap<DiscountReservationDetailRequest, DiscountReservationDetail>().ReverseMap();
+
+            CreateMap<DiscountServiceDetailRequest, DiscountServiceDetail>().ReverseMap();
+
             CreateMap<DiscountUpdateDto, Discount>().ReverseMap();
 
             CreateMap<DiscountResponseDto, Discount>()
@@ -57,6 +64,8 @@ namespace WebHotel.Helper
             CreateMap<ServiceAttachDetail, ServiceAttachDetailRequestDto>().ReverseMap();
 
             CreateMap<ServiceAttachDetailResponseDto, ServiceAttachDetail>().ReverseMap();
+
+            CreateMap<Notification, NotificationDto>().ReverseMap();
         }
     }
 }

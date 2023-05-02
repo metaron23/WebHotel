@@ -3,7 +3,7 @@ using WebHotel.DTO.ServiceAttachDtos;
 
 namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
 {
-    public interface IServiceAttachRepository
+    public interface IServiceAttachAdminRepository
     {
         Task<StatusDto> Create(ServiceAttachRequestDto serviceAttach);
 

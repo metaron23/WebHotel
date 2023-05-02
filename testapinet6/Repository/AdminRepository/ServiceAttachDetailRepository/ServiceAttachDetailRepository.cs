@@ -54,7 +54,7 @@ public class ServiceAttachDetailRepository : IServiceAttachDetailRepository
 
     public async Task<IEnumerable<ServiceAttachDetailResponseDto>> GetAll()
     {
-        var serviceAttach = _mapper.Map<List<ServiceAttachDetailResponseDto>>(await _context.ServiceAttachDetails.AsNoTracking().ToListAsync());
+        var serviceAttach = _mapper.Map<List<ServiceAttachDetailResponseDto>>(await _context.ServiceAttachDetails.AsNoTracking().OrderByDescending(a => a.Id).ToListAsync());
         return serviceAttach;
     }
 }

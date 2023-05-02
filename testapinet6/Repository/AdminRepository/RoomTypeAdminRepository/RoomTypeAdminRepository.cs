@@ -7,12 +7,12 @@ using WebHotel.DTO.RoomTypeDtos;
 
 namespace WebHotel.Repository.AdminRepository.RoomTypeRepository
 {
-    public class RoomTypeRepository : IRoomTypeRepository
+    public class RoomTypeAdminRepository : IRoomTypeAdminRepository
     {
         private readonly MyDBContext _context;
         private readonly IMapper _mapper;
 
-        public RoomTypeRepository(MyDBContext context, IMapper mapper)
+        public RoomTypeAdminRepository(MyDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -54,7 +54,7 @@ namespace WebHotel.Repository.AdminRepository.RoomTypeRepository
 
         public async Task<IEnumerable<RoomTypeResponseDto>> GetAll()
         {
-            var roomTypes = await _context.RoomTypes.AsNoTracking().ToListAsync();
+            var roomTypes = await _context.RoomTypes.AsNoTracking().OrderByDescending(a => a.Id).ToListAsync();
             var result = _mapper.Map<List<RoomTypeResponseDto>>(roomTypes);
             return result;
         }

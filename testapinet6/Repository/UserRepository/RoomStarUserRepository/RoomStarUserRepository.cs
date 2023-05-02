@@ -4,14 +4,14 @@ using Database.Models;
 using WebHotel.DTO;
 using WebHotel.DTO.RoomStarDtos;
 
-namespace WebHotel.Repository.AdminRepository.RoomStarRepository
+namespace WebHotel.Repository.UserRepository.RoomStarRepository
 {
-    public class RoomStarRepository : IRoomStarRepository
+    public class RoomStarUserRepository : IRoomStarUserRepository
     {
         private readonly MyDBContext _context;
         private readonly IMapper _mapper;
 
-        public RoomStarRepository(MyDBContext context, IMapper mapper)
+        public RoomStarUserRepository(MyDBContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

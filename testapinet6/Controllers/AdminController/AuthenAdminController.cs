@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
 using WebHotel.DTO.AuthenticationDtos;
 using WebHotel.Repository.AdminRepository.AuthenRepository;
@@ -7,6 +8,7 @@ namespace WebHotel.Controllers.AdminController
 {
 
     [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("v{version:apiVersion}/admin/")]
     [ApiVersion("2.0")]
     public class AuthenAdminController : ControllerBase
@@ -20,6 +22,7 @@ namespace WebHotel.Controllers.AdminController
 
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login123([FromBody] LoginDto model)
         {
             var result = await _authenAdminRepository.Login(model);

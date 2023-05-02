@@ -62,7 +62,7 @@ namespace WebHotel.Repository.AdminRepository.DiscountTypeRepository
 
         public async Task<IEnumerable<DiscountTypeResponseDto>> GetAll()
         {
-            var discountTypes = await _context.DiscountTypes.AsNoTracking().ToListAsync();
+            var discountTypes = await _context.DiscountTypes.AsNoTracking().OrderByDescending(a => a.Id).ToListAsync();
             var result = _mapper.Map<List<DiscountTypeResponseDto>>(discountTypes);
             return result;
         }

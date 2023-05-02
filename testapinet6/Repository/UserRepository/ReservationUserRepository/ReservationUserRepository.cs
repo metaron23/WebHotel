@@ -19,38 +19,49 @@ namespace WebHotel.Repository.UserRepository.ReservationRepository
         }
         public async Task<StatusDto> Create(ReservationCreateDto reservationCreateDto, string email)
         {
-            var reservationExists = _context.Reservations.Where(a => a.EndDate < reservationCreateDto.EndDate).Where(a => a.StartDate > reservationCreateDto.EndDate);
-            if (reservationExists is null)
+            if (reservationCreateDto.StartDate!.Value.Date >= DateTime.Now.Date && reservationCreateDto.EndDate!.Value.Date > reservationCreateDto.StartDate!.Value.Date)
             {
                 var room = _context.Rooms.AsNoTracking().SingleOrDefault(a => a.Id == reservationCreateDto.RoomId)!;
 
                 var user = _context.Users.AsNoTracking().SingleOrDefault(a => a.Email == email)!;
-
-                if (room is not null || user is not null)
+                if (room is not null && user is not null)
                 {
-                    var reservation = _mapper.Map<Reservation>(reservationCreateDto);
+                    var reservationExists = await _context.Reservations.Where(a => (a.EndDate <= reservationCreateDto.EndDate && a.EndDate >= reservationCreateDto.StartDate) || (a.StartDate <= reservationCreateDto.EndDate && a.StartDate >= reservationCreateDto.StartDate)).ToListAsync();
+                    if (reservationExists.Count() == 0)
+                    {
+                        var reservation = _mapper.Map<Reservation>(reservationCreateDto);
 
-                    reservation.UserId = user.Id;
+                        reservation.UserId = user.Id;
+                        reservation.RoomPrice = (decimal)(room!.DiscountPrice == null ? room.CurrentPrice : room.DiscountPrice)!;
 
-                    reservation.RoomPrice = (decimal)(room!.DiscountPrice == null ? room.CurrentPrice : room.DiscountPrice)!;
+                        var startDate = reservationCreateDto.StartDate!.Value;
 
-                    var startDate = reservationCreateDto.StartDate!.Value;
-
-                    reservation.StartDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 12, 00, 00);
-
-                    reservation.EndDate = reservation.StartDate.AddDays((double)reservationCreateDto.NumberOfDay!);
-
-                    reservation.DepositEndAt = startDate.AddMinutes(30);
-
-                    reservation.ReservationPrice = reservation.RoomPrice * (decimal)reservation.NumberOfDay;
-
-                    await _context.Reservations.AddAsync(reservation);
-                    await _context.SaveChangesAsync();
-                    return new StatusDto { StatusCode = 1, Message = "Successful booking" };
+                        reservation.StartDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 12, 00, 00);
+                        reservation.EndDate = reservation.StartDate.AddDays((double)reservationCreateDto.NumberOfDay!);
+                        reservation.DepositEndAt = startDate.AddMinutes(30);
+                        reservation.ReservationPrice = reservation.RoomPrice * (decimal)reservation.NumberOfDay;
+                        try
+                        {
+                            await _context.Reservations.AddAsync(reservation);
+                            await _context.SaveChangesAsync();
+                            return new StatusDto { StatusCode = 1, Message = "Successful booking" };
+                        }
+                        catch (Exception ex)
+                        {
+                            return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                        }
+                    }
+                    else
+                    {
+                        return new StatusDto { StatusCode = 0, Message = "Room is booked" };
+                    }
                 }
-                return new StatusDto { StatusCode = 0, Message = "Booking failed" };
+                else
+                {
+                    return new StatusDto { StatusCode = 0, Message = "Booking failed. Room or account not valid" };
+                }
             }
-            return new StatusDto { StatusCode = 0, Message = "Room is Booked" };
+            return new StatusDto { StatusCode = 0, Message = "Time failed" };
         }
     }
 }

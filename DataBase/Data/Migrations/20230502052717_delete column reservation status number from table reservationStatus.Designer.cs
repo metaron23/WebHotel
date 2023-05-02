@@ -4,6 +4,7 @@ using Database.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230502052717_delete column reservation status number from table reservationStatus")]
+    partial class deletecolumnreservationstatusnumberfromtablereservationStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,87 +239,6 @@ namespace DataBase.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("DataBase.Models.Blog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("LongContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LongTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PosterId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ShortContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShortTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Blog");
-
-                    b.HasIndex("PosterId");
-
-                    b.ToTable("Blog", (string)null);
-                });
-
-            modelBuilder.Entity("DataBase.Models.BlogType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_BlogType");
-
-                    b.ToTable("BlogType", (string)null);
-                });
-
-            modelBuilder.Entity("DataBase.Models.BlogTypeDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BlogTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK_BlogTypeDetail");
-
-                    b.HasIndex("BlogTypeId");
-
-                    b.ToTable("BlogTypeDetail", (string)null);
                 });
 
             modelBuilder.Entity("Database.Models.Discount", b =>
@@ -1106,36 +1027,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DataBase.Models.Blog", b =>
-                {
-                    b.HasOne("Database.Models.ApplicationUser", "Poster")
-                        .WithMany("Blogs")
-                        .HasForeignKey("PosterId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Blog_AspNetUsers");
-
-                    b.Navigation("Poster");
-                });
-
-            modelBuilder.Entity("DataBase.Models.BlogTypeDetail", b =>
-                {
-                    b.HasOne("DataBase.Models.Blog", "Blog")
-                        .WithMany("BlogTypeDetails")
-                        .HasForeignKey("BlogTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_BlogTypeDetail_Blog");
-
-                    b.HasOne("DataBase.Models.BlogType", "BlogType")
-                        .WithMany("BlogTypeDetails")
-                        .HasForeignKey("BlogTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_BlogTypeDetail_BlogType");
-
-                    b.Navigation("Blog");
-
-                    b.Navigation("BlogType");
-                });
-
             modelBuilder.Entity("Database.Models.Discount", b =>
                 {
                     b.HasOne("Database.Models.ApplicationUser", "Creator")
@@ -1392,8 +1283,6 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Blogs");
-
                     b.Navigation("Claims");
 
                     b.Navigation("DiscountReservationDetails");
@@ -1417,16 +1306,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("Tokens");
 
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("DataBase.Models.Blog", b =>
-                {
-                    b.Navigation("BlogTypeDetails");
-                });
-
-            modelBuilder.Entity("DataBase.Models.BlogType", b =>
-                {
-                    b.Navigation("BlogTypeDetails");
                 });
 
             modelBuilder.Entity("Database.Models.Discount", b =>

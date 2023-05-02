@@ -1,17 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO.RoomStarDtos;
-using WebHotel.Repository.AdminRepository.RoomStarRepository;
+using WebHotel.Repository.UserRepository.RoomStarRepository;
 
 namespace WebHotel.Controllers.UserController;
 
 [ApiController]
 [ApiVersion("1.0")]
+[Authorize]
 [Route("user/")]
 public class RoomStarUserController : ControllerBase
 {
-    private readonly IRoomStarRepository _roomStarRepository;
+    private readonly IRoomStarUserRepository _roomStarRepository;
 
-    public RoomStarUserController(IRoomStarRepository roomStarRepository)
+    public RoomStarUserController(IRoomStarUserRepository roomStarRepository)
     {
         _roomStarRepository = roomStarRepository;
     }

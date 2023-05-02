@@ -9,4 +9,10 @@
         public bool? Status { get; set; }
         public bool Link { get; set; }
     }
+
+    public class NotificationDtos
+    {
+        public int Count { get; set; }
+        public List<NotificationDto>? Items { get; set; }
+    }
 }

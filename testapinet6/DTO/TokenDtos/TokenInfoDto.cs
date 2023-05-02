@@ -1,4 +1,4 @@
-﻿namespace WebHotel.DTO;
+﻿namespace WebHotel.DTO.TokenDtos;
 
 public partial class TokenInfoDto
 {

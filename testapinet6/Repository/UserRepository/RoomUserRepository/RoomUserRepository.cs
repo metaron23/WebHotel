@@ -31,7 +31,7 @@ public class RoomUserRepository : IRoomUserRepository
 
     public async Task<IEnumerable<RoomResponseDto>> GetAll()
     {
-        var roomBases = await _context.Rooms.Include(a => a.RoomType).AsNoTracking().ToListAsync();
+        var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
         if (roomBases == null)
         {
             return default!;
@@ -43,6 +43,8 @@ public class RoomUserRepository : IRoomUserRepository
             await CheckDiscount(item);
             roomResponse = _mapper.Map<RoomResponseDto>(item);
             roomResponse.RoomTypeName = item.RoomType.TypeName;
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             roomResponses.Add(roomResponse);
         }
         return roomResponses;
@@ -50,13 +52,15 @@ public class RoomUserRepository : IRoomUserRepository
 
     public async Task<RoomResponseDto> GetById(string id)
     {
-        var roomBases = _context.Rooms.Include(a => a.RoomType).AsNoTracking().SingleOrDefault(a => a.Id == id);
+        var roomBases = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().SingleOrDefault(a => a.Id == id);
         if (roomBases != null)
         {
             var roomResponse = new RoomResponseDto();
             await CheckDiscount(roomBases);
             roomResponse = _mapper.Map<RoomResponseDto>(roomBases);
             roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
+            var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.RoomTypeId);
+            roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             return roomResponse;
         }
         return default!;
@@ -64,7 +68,7 @@ public class RoomUserRepository : IRoomUserRepository
 
     public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber)
     {
-        var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).AsNoTracking().AsQueryable();
+        var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).AsQueryable();
         if (checkIn is not null && checkOut is not null)
         {
             var reservation = _context.Reservations.Where(a => a.EndDate <= checkIn || a.StartDate >= checkOut).Select(a => a.RoomId);
@@ -98,6 +102,8 @@ public class RoomUserRepository : IRoomUserRepository
             await CheckDiscount(item);
             roomResponse = _mapper.Map<RoomResponseDto>(item);
             roomResponse.RoomTypeName = item.RoomType.TypeName;
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             roomResponses.Add(roomResponse);
         }
         return roomResponses;
@@ -111,8 +117,8 @@ public class RoomUserRepository : IRoomUserRepository
         {
             roomSearch.MaxPerson = await room.MaxAsync(a => a.PeopleNumber);
             roomSearch.MaxPrice = await room.MaxAsync(a => a.CurrentPrice);
-            roomSearch.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.ToListAsync());
-            roomSearch.RoomTypes = _mapper.Map<List<RoomTypeResponseDto>>(await _context.RoomTypes.ToListAsync());
+            roomSearch.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.OrderByDescending(a => a.Id).ToListAsync());
+            roomSearch.RoomTypes = _mapper.Map<List<RoomTypeResponseDto>>(await _context.RoomTypes.OrderByDescending(a => a.Id).ToListAsync());
             return roomSearch;
         }
         return default!;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO;
 using WebHotel.DTO.RoomTypeDtos;
 using WebHotel.Repository.AdminRepository.RoomTypeRepository;
@@ -8,11 +9,12 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/room-type/")]
+[Authorize(Roles = "Admin")]
 public class RoomTypeAdminController : ControllerBase
 {
-    private readonly IRoomTypeRepository _roomTypeRepository;
+    private readonly IRoomTypeAdminRepository _roomTypeRepository;
 
-    public RoomTypeAdminController(IRoomTypeRepository roomTypeRepository)
+    public RoomTypeAdminController(IRoomTypeAdminRepository roomTypeRepository)
     {
         _roomTypeRepository = roomTypeRepository;
     }

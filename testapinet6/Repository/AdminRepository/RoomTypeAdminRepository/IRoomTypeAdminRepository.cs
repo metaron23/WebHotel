@@ -3,7 +3,7 @@ using WebHotel.DTO.RoomTypeDtos;
 
 namespace WebHotel.Repository.AdminRepository.RoomTypeRepository
 {
-    public interface IRoomTypeRepository
+    public interface IRoomTypeAdminRepository
     {
         Task<StatusDto> Create(RoomTypeRequestDto roomTypeCreateDto);
         Task<StatusDto> Update(int? id, RoomTypeRequestDto roomTypeRequestDto);
