@@ -8,5 +8,8 @@ namespace WebHotel.Repository.AdminRepository.AuthenRepository
     {
         Task<object> Login([FromBody] LoginDto model);
         Task<StatusDto> RegistrationAdmin([FromBody] RegisterAdminDto model);
+        Task<StatusDto> RegistrationEmployee([FromBody] RegisterAdminDto model);
+        Task<StatusDto> RequestChangePassword(ForgotPasswordDto forgotPasswordModel);
+        Task<StatusDto> ConfirmChangePassword(ResetPasswordDto resetPasswordModel);
     }
 }

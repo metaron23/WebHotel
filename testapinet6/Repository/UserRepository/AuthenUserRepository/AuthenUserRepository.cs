@@ -212,8 +212,6 @@ namespace WebHotel.Repository.UserRepository.AuthenRepository
             return result.Succeeded;
         }
 
-
-
         public async Task<StatusDto> RegistrationAdmin([FromBody] RegisterAdminDto model)
         {
             var status = new StatusDto();
@@ -308,7 +306,7 @@ namespace WebHotel.Repository.UserRepository.AuthenRepository
             {
                 To = user.Email,
                 Subject = "Mail confim change pass",
-                Body = "Change password link: <a href=\"" + callBack + "\">Click Confirm</a>, " + token + ""
+                Body = "Change password link: <a href=\"" + callBack + "\">Click Confirm</a>"
             });
             return new StatusDto { StatusCode = 1, Message = "Please check mail to change pass" };
         }

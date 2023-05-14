@@ -36,6 +36,8 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<Notification> Notifications { get; } = new List<Notification>();
 
     public virtual ICollection<Blog> Blogs { get; } = new List<Blog>();
+
+    public virtual Salary Salary { get; } = null!;
 }
 
 public class ApplicationRole : IdentityRole

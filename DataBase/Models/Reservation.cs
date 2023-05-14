@@ -12,9 +12,7 @@ public partial class Reservation
 
     public decimal RoomPrice { get; set; }
 
-    public DateTime? DepositEndAt { get; set; }
-
-    public byte[]? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
@@ -40,7 +38,7 @@ public partial class Reservation
 
     public virtual ICollection<ReservationChat> ReservationChats { get; } = new List<ReservationChat>();
 
-    public virtual ICollection<ReservationStatusEvent> ReservationStatusEvents { get; } = new List<ReservationStatusEvent>();
+    public virtual ReservationPayment ReservationPayment { get; set; } = null!;
 
     public virtual Room Room { get; set; } = null!;
 

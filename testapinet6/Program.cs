@@ -38,6 +38,7 @@ builder.Services.AddDbContext<MyDBContext>(options =>
 builder.Services.IdentityService();
 builder.Services.RepositoryService();
 builder.AuthenJWTService();
+
 builder.Services.AuthorService();
 #endregion
 
@@ -94,10 +95,10 @@ app.UseFileServer();
 
 app.UseCors(MyAllowSpecificOrigins);
 
-app.MapHub<ChatHub>("/hub");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<HubService>("/hub");
 
 app.Run();
 

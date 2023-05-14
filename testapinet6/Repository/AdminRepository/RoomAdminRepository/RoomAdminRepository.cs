@@ -138,10 +138,16 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
         public async Task CheckDiscount(Room room)
         {
             var discount = await _context.DiscountRoomDetails.Include(a => a.Discount)
-                .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
+                        .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
             if (discount != null)
             {
                 room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
+                _context.Entry(room).State = EntityState.Modified;
+            }
+            else
+            {
+                room.DiscountPrice = 0;
+                _context.Entry(room).State = EntityState.Modified;
             }
         }
 
@@ -164,6 +170,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }
+            await _context.SaveChangesAsync();
             return roomResponses;
         }
 
@@ -180,6 +187,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 return roomResponse;
             }
+            await _context.SaveChangesAsync();
             return default!;
         }
 
@@ -220,6 +228,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }
+            await _context.SaveChangesAsync();
             return roomResponses;
         }
     }

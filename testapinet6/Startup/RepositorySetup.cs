@@ -9,6 +9,7 @@ using WebHotel.Repository.AdminRepository.RoomRepository;
 using WebHotel.Repository.AdminRepository.RoomTypeRepository;
 using WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository;
 using WebHotel.Repository.AdminRepository.ServiceAttachRepository;
+using WebHotel.Repository.BaseRepository.NotificationRepository;
 using WebHotel.Repository.UserRepository.AuthenRepository;
 using WebHotel.Repository.UserRepository.ReservationRepository;
 using WebHotel.Repository.UserRepository.RoomStarRepository;
@@ -17,6 +18,7 @@ using WebHotel.Repository.UserRepository.UserProfileRepository;
 using WebHotel.Service.EmailRepository;
 using WebHotel.Service.FileService;
 using WebHotel.Service.TokenRepository;
+using WebHotel.Service.VNPayService;
 
 namespace WebHotel.Startup
 {
@@ -61,6 +63,10 @@ namespace WebHotel.Startup
             services.AddScoped<IServiceAttachAdminRepository, ServiceAttachAdminRepository>();
 
             services.AddScoped<IServiceAttachDetailRepository, ServiceAttachDetailRepository>();
+
+            services.AddScoped<IVnPayService, VnPayService>();
+
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             return services;
         }

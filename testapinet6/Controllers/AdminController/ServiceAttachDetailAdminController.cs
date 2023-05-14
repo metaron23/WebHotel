@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebHotel.DTO.ServiceAttachDetailDtos;
 using WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository;
 
@@ -8,7 +7,7 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/service-attach-detail/")]
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
 public class ServiceAttachDetailAdminController : ControllerBase
 {
     private readonly IServiceAttachDetailRepository _serviceAttachDetailRepository;
@@ -23,6 +22,18 @@ public class ServiceAttachDetailAdminController : ControllerBase
     public async Task<IActionResult> Create([FromBody] ServiceAttachDetailRequestDto serviceAttachDetailDto)
     {
         var result = await _serviceAttachDetailRepository.Create(serviceAttachDetailDto);
+        if (result.StatusCode == 1)
+        {
+            return Ok(result);
+        }
+        return BadRequest(result);
+    }
+
+    [HttpPost]
+    [Route("create-list")]
+    public async Task<IActionResult> CreateList([FromBody] ServiceAttachDetailRequestDtos serviceAttachDetailRequestDtos)
+    {
+        var result = await _serviceAttachDetailRepository.CreateList(serviceAttachDetailRequestDtos);
         if (result.StatusCode == 1)
         {
             return Ok(result);

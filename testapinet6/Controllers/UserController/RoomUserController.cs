@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebHotel.DTO.RoomDtos;
 using WebHotel.Repository.UserRepository.RoomUserRepository;
 
 namespace WebHotel.Controllers.UserController;
@@ -23,6 +24,22 @@ public partial class RoomUserController : ControllerBase
     }
 
     [HttpGet]
+    [Route("room/get-top-new")]
+    public async Task<IActionResult> GetTopNew()
+    {
+        var result = await _roomUserRepository.GetTopNew();
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("room/get-top-on-sale")]
+    public async Task<IActionResult> GetTopOnSale()
+    {
+        var result = await _roomUserRepository.GetTopOnSale();
+        return Ok(result);
+    }
+
+    [HttpGet]
     [Route("room/get-by-id")]
     public async Task<IActionResult> GetById(string id)
     {
@@ -34,11 +51,11 @@ public partial class RoomUserController : ControllerBase
         return BadRequest();
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("room/get-all-by")]
-    public async Task<IActionResult> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber)
+    public async Task<IActionResult> GetAllBy(RoomDataSearchDto roomDataSearchDto)
     {
-        var result = await _roomUserRepository.GetAllBy(checkIn, checkOut, price, typeRoomName, star, peopleNumber);
+        var result = await _roomUserRepository.GetAllBy(roomDataSearchDto);
         return Ok(result);
     }
 

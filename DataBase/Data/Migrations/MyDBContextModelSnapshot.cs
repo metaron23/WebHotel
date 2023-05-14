@@ -252,6 +252,10 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LongContent")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -318,6 +322,47 @@ namespace DataBase.Data.Migrations
                     b.HasIndex("BlogTypeId");
 
                     b.ToTable("BlogTypeDetail", (string)null);
+                });
+
+            modelBuilder.Entity("DataBase.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getDate()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Contact", (string)null);
                 });
 
             modelBuilder.Entity("Database.Models.Discount", b =>
@@ -508,20 +553,13 @@ namespace DataBase.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("ConfirmerId")
-                        .IsRequired()
-                        .HasMaxLength(450)
+                    b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("IssuedAt")
+                    b.Property<DateTime>("PayAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
-
-                    b.Property<byte[]>("PaidAt")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.Property<decimal>("PriceReservedRoom")
                         .HasColumnType("decimal(19,2)");
@@ -539,7 +577,7 @@ namespace DataBase.Data.Migrations
                     b.HasKey("Id")
                         .HasName("PK__InvoiceR__3214EC07A70F1055");
 
-                    b.HasIndex("ConfirmerId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ReservationId");
 
@@ -562,8 +600,13 @@ namespace DataBase.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Link")
-                        .HasColumnType("bit");
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NotificationType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("0");
 
                     b.Property<bool?>("Status")
                         .ValueGeneratedOnAdd()
@@ -641,13 +684,10 @@ namespace DataBase.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("CreatedAt")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<DateTime?>("DepositEndAt")
-                        .HasColumnType("datetime");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -743,26 +783,7 @@ namespace DataBase.Data.Migrations
                     b.ToTable("ReservationChat", (string)null);
                 });
 
-            modelBuilder.Entity("Database.Models.ReservationStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("StatusName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__Reservat__3214EC0748171EE6");
-
-                    b.ToTable("ReservationStatus", (string)null);
-                });
-
-            modelBuilder.Entity("Database.Models.ReservationStatusEvent", b =>
+            modelBuilder.Entity("Database.Models.ReservationPayment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -773,22 +794,41 @@ namespace DataBase.Data.Migrations
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime");
 
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PriceTotal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
+
                     b.Property<string>("ReservationId")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("ReservationStatusId")
-                        .HasColumnType("int");
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("1");
 
                     b.HasKey("Id")
                         .HasName("PK__Reservat__3214EC07950B4BF3");
 
-                    b.HasIndex("ReservationId");
+                    b.HasIndex("ReservationId")
+                        .IsUnique();
 
-                    b.HasIndex("ReservationStatusId");
-
-                    b.ToTable("ReservationStatusEvents");
+                    b.ToTable("ReservationPayment", (string)null);
                 });
 
             modelBuilder.Entity("Database.Models.Room", b =>
@@ -811,7 +851,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("ntext");
 
                     b.Property<decimal?>("DiscountPrice")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<bool?>("IsActive")
                         .IsRequired()
@@ -932,6 +974,45 @@ namespace DataBase.Data.Migrations
                     b.ToTable("RoomType", (string)null);
                 });
 
+            modelBuilder.Entity("DataBase.Models.Salary", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
+
+                    b.Property<decimal?>("Allowance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<decimal>("BasicSalary")
+                        .HasColumnType("decimal(19,2)");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("NumberOfDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<DateTime?>("WorkTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getDate()");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Salary");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("Salary", (string)null);
+                });
+
             modelBuilder.Entity("Database.Models.ServiceAttach", b =>
                 {
                     b.Property<int>("Id")
@@ -980,7 +1061,8 @@ namespace DataBase.Data.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.HasIndex("ServiceAttachId");
+                    b.HasIndex("ServiceAttachId", "RoomTypeId")
+                        .IsUnique();
 
                     b.ToTable("ServiceAttachDetail", (string)null);
                 });
@@ -1238,19 +1320,15 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.HasOne("Database.Models.ApplicationUser", "Confirmer")
+                    b.HasOne("Database.Models.ApplicationUser", null)
                         .WithMany("InvoiceReservations")
-                        .HasForeignKey("ConfirmerId")
-                        .IsRequired()
-                        .HasConstraintName("FK_InvoiceReservation_AspNetUsers");
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("Database.Models.Reservation", "Reservation")
                         .WithMany("InvoiceReservations")
                         .HasForeignKey("ReservationId")
                         .IsRequired()
                         .HasConstraintName("FK_InvoiceReservation_Reservation");
-
-                    b.Navigation("Confirmer");
 
                     b.Navigation("Reservation");
                 });
@@ -1323,23 +1401,15 @@ namespace DataBase.Data.Migrations
                     b.Navigation("Reservation");
                 });
 
-            modelBuilder.Entity("Database.Models.ReservationStatusEvent", b =>
+            modelBuilder.Entity("Database.Models.ReservationPayment", b =>
                 {
                     b.HasOne("Database.Models.Reservation", "Reservation")
-                        .WithMany("ReservationStatusEvents")
-                        .HasForeignKey("ReservationId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ReservationStatusEventsn_Reservation");
-
-                    b.HasOne("Database.Models.ReservationStatus", "ReservationStatus")
-                        .WithMany("ReservationStatusEvents")
-                        .HasForeignKey("ReservationStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ReservationStatusEvents_ReservationStatus");
+                        .WithOne("ReservationPayment")
+                        .HasForeignKey("Database.Models.ReservationPayment", "ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Reservation");
-
-                    b.Navigation("ReservationStatus");
                 });
 
             modelBuilder.Entity("Database.Models.Room", b =>
@@ -1362,6 +1432,17 @@ namespace DataBase.Data.Migrations
                         .HasConstraintName("FK_RoomStar_Room");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("DataBase.Models.Salary", b =>
+                {
+                    b.HasOne("Database.Models.ApplicationUser", "Employee")
+                        .WithOne("Salary")
+                        .HasForeignKey("DataBase.Models.Salary", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Database.Models.ServiceAttachDetail", b =>
@@ -1414,6 +1495,9 @@ namespace DataBase.Data.Migrations
 
                     b.Navigation("Reservations");
 
+                    b.Navigation("Salary")
+                        .IsRequired();
+
                     b.Navigation("Tokens");
 
                     b.Navigation("UserRoles");
@@ -1453,12 +1537,8 @@ namespace DataBase.Data.Migrations
 
                     b.Navigation("ReservationChats");
 
-                    b.Navigation("ReservationStatusEvents");
-                });
-
-            modelBuilder.Entity("Database.Models.ReservationStatus", b =>
-                {
-                    b.Navigation("ReservationStatusEvents");
+                    b.Navigation("ReservationPayment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Database.Models.Room", b =>

@@ -47,9 +47,7 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public virtual DbSet<ReservationChat> ReservationChats { get; set; }
 
-    public virtual DbSet<ReservationStatus> ReservationStatuses { get; set; }
-
-    public virtual DbSet<ReservationStatusEvent> ReservationStatusEvents { get; set; }
+    public virtual DbSet<ReservationPayment> ReservationPayments { get; set; }
 
     public virtual DbSet<Room> Rooms { get; set; }
 
@@ -66,9 +64,17 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
     public virtual DbSet<TokenInfo> TokenInfos { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
+
     public virtual DbSet<Blog> Blogs { get; set; }
+
     public virtual DbSet<BlogType> BlogTypes { get; set; }
+
     public virtual DbSet<BlogTypeDetail> BlogTypeDetails { get; set; }
+
+    public virtual DbSet<Salary> Salarys { get; set; }
+
+    public virtual DbSet<Contact> Contacts { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -240,23 +246,14 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
             entity.ToTable("InvoiceReservation");
 
-            entity.Property(e => e.ConfirmerId).HasMaxLength(450);
-            entity.Property(e => e.IssuedAt)
+            entity.Property(e => e.PayAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.PaidAt)
-                .IsRowVersion()
-                .IsConcurrencyToken();
             entity.Property(e => e.PriceReservedRoom).HasColumnType("decimal(19, 2)");
             entity.Property(e => e.PriceService)
                 .HasDefaultValueSql("((0))")
                 .HasColumnType("decimal(19, 2)");
             entity.Property(e => e.ReservationId).HasMaxLength(255);
-
-            entity.HasOne(d => d.Confirmer).WithMany(p => p.InvoiceReservations)
-                .HasForeignKey(d => d.ConfirmerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_InvoiceReservation_AspNetUsers");
 
             entity.HasOne(d => d.Reservation).WithMany(p => p.InvoiceReservations)
                 .HasForeignKey(d => d.ReservationId)
@@ -300,11 +297,9 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.Property(e => e.Id)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("(newid())");
-            entity.Property(e => e.CreatedAt)
-                .IsRowVersion()
-                .IsConcurrencyToken();
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("getdate()");
+
             entity.Property(e => e.NumberOfDay).HasDefaultValueSql("1.0");
-            entity.Property(e => e.DepositEndAt).HasColumnType("datetime");
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.ReservationPrice).HasColumnType("decimal(19, 2)");
             entity.Property(e => e.RoomId).HasMaxLength(255);
@@ -344,31 +339,19 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
                 .HasConstraintName("FK_ReservationChat_Reservation");
         });
 
-        modelBuilder.Entity<ReservationStatus>(entity =>
+        modelBuilder.Entity<ReservationPayment>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Reservat__3214EC0748171EE6");
-
-            entity.ToTable("ReservationStatus");
-
-            entity.Property(e => e.StatusName).HasMaxLength(255);
-        });
-
-        modelBuilder.Entity<ReservationStatusEvent>(entity =>
-        {
+            entity.ToTable("ReservationPayment");
             entity.HasKey(e => e.Id).HasName("PK__Reservat__3214EC07950B4BF3");
 
             entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.PriceTotal).HasDefaultValueSql("0").HasColumnType("decimal(19,2)");
+            entity.Property(e => e.Status).HasDefaultValueSql("1");
             entity.Property(e => e.ReservationId).HasMaxLength(255);
 
-            entity.HasOne(d => d.Reservation).WithMany(p => p.ReservationStatusEvents)
-                .HasForeignKey(d => d.ReservationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ReservationStatusEventsn_Reservation");
-
-            entity.HasOne(d => d.ReservationStatus).WithMany(p => p.ReservationStatusEvents)
-                .HasForeignKey(d => d.ReservationStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ReservationStatusEvents_ReservationStatus");
+            entity.HasOne(d => d.Reservation).WithOne(p => p.ReservationPayment)
+                .HasForeignKey<ReservationPayment>(d => d.ReservationId)
+                .IsRequired();
         });
 
         modelBuilder.Entity<Room>(entity =>
@@ -399,7 +382,7 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
             entity.Property(e => e.Description).HasColumnType("ntext");
 
-            entity.Property(e => e.DiscountPrice).HasColumnType("decimal(19, 2)");
+            entity.Property(e => e.DiscountPrice).HasColumnType("decimal(19, 2)").HasDefaultValueSql("0");
 
             entity.Property(e => e.PeopleNumber).HasDefaultValueSql("((1))");
 
@@ -472,6 +455,8 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
             entity.ToTable("ServiceAttachDetail");
 
+            entity.HasIndex(c => new { c.ServiceAttachId, c.RoomTypeId }).IsUnique(true);
+
             entity.HasOne(d => d.RoomType).WithMany(p => p.ServiceAttachDetails)
                 .HasForeignKey(d => d.RoomTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -509,6 +494,8 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.HasKey(e => e.Id).HasName("PK_Notification");
 
             entity.Property(e => e.CreateAt).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+
+            entity.Property(e => e.NotificationType).HasDefaultValueSql("0");
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserId)
@@ -551,6 +538,27 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
                 .HasForeignKey(d => d.BlogTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BlogTypeDetail_Blog");
+        });
+
+        modelBuilder.Entity<Salary>(entity =>
+        {
+            entity.ToTable("Salary");
+            entity.HasKey(a => a.Id).HasName("PK_Salary");
+            entity.HasOne(a => a.Employee).WithOne(a => a.Salary)
+                    .HasForeignKey<Salary>(a => a.EmployeeId).IsRequired();
+            entity.Property(a => a.BasicSalary).IsRequired().HasColumnType("decimal(19,2)");
+            entity.Property(a => a.NumberOfDays).HasDefaultValueSql("0");
+            entity.Property(a => a.Allowance).HasDefaultValueSql("0").HasColumnType("decimal(19, 2)");
+            entity.Property(a => a.WorkTime).HasColumnType("datetime").HasDefaultValueSql("getDate()");
+        });
+
+        modelBuilder.Entity<Contact>(e =>
+        {
+            e.HasKey(a => a.Id);
+            e.ToTable("Contact");
+            e.Property(a => a.Phone).HasMaxLength(20);
+            e.Property(a => a.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("getDate()");
+
         });
 
         OnModelCreatingPartial(modelBuilder);

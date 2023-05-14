@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebHotel.DTO;
 using WebHotel.DTO.RoomTypeDtos;
 using WebHotel.Repository.AdminRepository.RoomTypeRepository;
 
@@ -57,8 +56,13 @@ public class RoomTypeAdminController : ControllerBase
 
     [HttpGet]
     [Route("delete")]
-    public async Task<StatusDto> Delete([FromQuery] int? id)
+    public async Task<IActionResult> Delete([FromQuery] int? id)
     {
-        return await _roomTypeRepository.Delete(id);
+        var result = await _roomTypeRepository.Delete(id);
+        if (result.StatusCode == 0)
+        {
+            return BadRequest(result);
+        }
+        return Ok(result);
     }
 }

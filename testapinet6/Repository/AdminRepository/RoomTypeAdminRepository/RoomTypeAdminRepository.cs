@@ -34,7 +34,7 @@ namespace WebHotel.Repository.AdminRepository.RoomTypeRepository
 
         public async Task<StatusDto> Delete(int? id)
         {
-            var roomType = _context.RoomTypes.SingleOrDefaultAsync(a => a.Id == id);
+            var roomType = await _context.RoomTypes.SingleOrDefaultAsync(a => a.Id == id);
             if (roomType != null)
             {
                 try

@@ -4,13 +4,13 @@
 
 namespace DataBase.Data.Migrations
 {
-    public partial class alter_room_pictures : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "RoomPictures",
-                table: "Room",
+                name: "Link",
+                table: "Notification",
                 type: "nvarchar(max)",
                 nullable: true);
         }
@@ -18,8 +18,8 @@ namespace DataBase.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "RoomPictures",
-                table: "Room");
+                name: "Link",
+                table: "Notification");
         }
     }
 }

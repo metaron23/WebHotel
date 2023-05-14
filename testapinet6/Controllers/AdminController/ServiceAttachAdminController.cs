@@ -9,11 +9,11 @@ namespace WebHotel.Controllers.AdminController;
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/service-attach/")]
 [Authorize(Roles = "Admin")]
-public class SeviceAttachController : ControllerBase
+public class SeviceAttachAdminController : ControllerBase
 {
     private readonly IServiceAttachAdminRepository _serviceAttachRepository;
 
-    public SeviceAttachController(IServiceAttachAdminRepository serviceAttachRepository)
+    public SeviceAttachAdminController(IServiceAttachAdminRepository serviceAttachRepository)
     {
         _serviceAttachRepository = serviceAttachRepository;
     }

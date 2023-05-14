@@ -1,12 +1,18 @@
 ﻿using AutoMapper;
 using Database.Models;
+using DataBase.Models;
+using WebHotel.Controllers.AdminController;
 using WebHotel.DTO;
+using WebHotel.DTO.AccountDtos;
+using WebHotel.DTO.BlogDtos;
 using WebHotel.DTO.DiscountDtos;
 using WebHotel.DTO.DiscountReservationDetailDtos;
 using WebHotel.DTO.DiscountRoomDetailDtos;
 using WebHotel.DTO.DiscountServiceDetailDtos;
 using WebHotel.DTO.DiscountTypeDtos;
+using WebHotel.DTO.PaymentDtos;
 using WebHotel.DTO.ReservationDtos;
+using WebHotel.DTO.ReservationPayment;
 using WebHotel.DTO.RoomDtos;
 using WebHotel.DTO.RoomStarDtos;
 using WebHotel.DTO.RoomTypeDtos;
@@ -65,7 +71,40 @@ namespace WebHotel.Helper
 
             CreateMap<ServiceAttachDetailResponseDto, ServiceAttachDetail>().ReverseMap();
 
-            CreateMap<Notification, NotificationDto>().ReverseMap();
+            CreateMap<Notification, NotificationResponseDto>().ReverseMap();
+
+            CreateMap<Notification, NotificationCreateDto>().ReverseMap()
+                .ForMember(d => d.NotificationType, o => o.MapFrom(s => (int)s.NotificationType));
+
+            CreateMap<ReservationPayment, PaymentRequestFullDto>().ReverseMap();
+
+            CreateMap<Blog, BlogCreateDto>().ReverseMap();
+
+            CreateMap<BlogResponseDto, Blog>().ReverseMap()
+                .ForMember(d => d.PosterEmail, o => o.MapFrom(source => source.Poster.Email))
+                .ForMember(d => d.PosterRoles, o => o.MapFrom(source => source.Poster.UserRoles.Select(a => a.Role!.Name).ToList()));
+
+            CreateMap<ApplicationUser, AccountResponseDto>().ReverseMap();
+
+            CreateMap<ApplicationRole, RoleResponseDto>().ReverseMap();
+
+            CreateMap<ApplicationRole, RoleCreateDto>().ReverseMap();
+
+            CreateMap<ReservationResponseAdminDto, Reservation>().ReverseMap()
+                .ForMember(a => a.RoomNumber, o => o.MapFrom(a => a.Room.RoomNumber))
+                .ForMember(a => a.UserName, o => o.MapFrom(a => a.User.UserName))
+            .ForMember(a => a.Status, o => o.MapFrom(a => a.ReservationPayment.Status))
+            .ForMember(a => a.ReservationPayment, o => o.MapFrom(a => a.ReservationPayment));
+
+            CreateMap<ReservationPayment, ReservationPaymentResponseDto>().ReverseMap();
+
+            CreateMap<ServiceRoom, ServiceRoomCreateDto>().ReverseMap();
+
+            CreateMap<ServiceRoom, ServiceRoomResponseDto>().ReverseMap();
+
+            CreateMap<OrderServiceResponseDto, OrderService>().ReverseMap()
+                .ForMember(d => d.CreatorEmail, o => o.MapFrom(s => s.User.Email));
+
         }
     }
 }

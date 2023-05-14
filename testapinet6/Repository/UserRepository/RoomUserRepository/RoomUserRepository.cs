@@ -26,6 +26,12 @@ public class RoomUserRepository : IRoomUserRepository
         if (discount != null)
         {
             room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
+            _context.Entry(room).State = EntityState.Modified;
+        }
+        else
+        {
+            room.DiscountPrice = 0;
+            _context.Entry(room).State = EntityState.Modified;
         }
     }
 
@@ -43,10 +49,11 @@ public class RoomUserRepository : IRoomUserRepository
             await CheckDiscount(item);
             roomResponse = _mapper.Map<RoomResponseDto>(item);
             roomResponse.RoomTypeName = item.RoomType.TypeName;
-            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.ServiceAttachId);
             roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             roomResponses.Add(roomResponse);
         }
+        await _context.SaveChangesAsync();
         return roomResponses;
     }
 
@@ -63,32 +70,33 @@ public class RoomUserRepository : IRoomUserRepository
             roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             return roomResponse;
         }
+        await _context.SaveChangesAsync();
         return default!;
     }
 
-    public async Task<IEnumerable<RoomResponseDto>> GetAllBy(DateTime? checkIn, DateTime? checkOut, decimal? price, string? typeRoomName, float? star, int? peopleNumber)
+    public async Task<IEnumerable<RoomResponseDto>> GetAllBy(RoomDataSearchDto roomDataSearchDto)
     {
         var roomBasesQuery = _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).AsQueryable();
-        if (checkIn is not null && checkOut is not null)
+        if (roomDataSearchDto.checkIn is not null && roomDataSearchDto.checkOut is not null)
         {
-            var reservation = _context.Reservations.Where(a => a.EndDate <= checkIn || a.StartDate >= checkOut).Select(a => a.RoomId);
-            roomBasesQuery = _context.Rooms.Where(a => reservation.Contains(a.Id));
+            var reservation = _context.Reservations.Where(a => (a.EndDate >= roomDataSearchDto.checkIn && a.EndDate <= roomDataSearchDto.checkOut) || (a.StartDate >= roomDataSearchDto.checkIn && a.StartDate <= roomDataSearchDto.checkOut)).Select(a => a.RoomId);
+            roomBasesQuery = roomBasesQuery.Where(a => !reservation.Contains(a.Id));
         }
-        if (price != null)
+        if (roomDataSearchDto.price > 0)
         {
-            roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice <= price || a.DiscountPrice > 0 && a.DiscountPrice <= price);
+            roomBasesQuery = roomBasesQuery.Where(a => a.CurrentPrice <= roomDataSearchDto.price || a.DiscountPrice > 0 && a.DiscountPrice <= roomDataSearchDto.price);
         }
-        if (typeRoomName != null)
+        if (roomDataSearchDto.typeRoomId > 0)
         {
-            roomBasesQuery = roomBasesQuery.Include(a => a.RoomType).Where(a => a.RoomType.TypeName == typeRoomName);
+            roomBasesQuery = roomBasesQuery.Include(a => a.RoomType).Where(a => a.RoomType.Id == roomDataSearchDto.typeRoomId);
         }
-        if (star != null)
+        if (roomDataSearchDto.star > 0)
         {
-            roomBasesQuery = roomBasesQuery.Where(a => a.StarSum == star);
+            roomBasesQuery = roomBasesQuery.Where(a => a.StarSum == roomDataSearchDto.star);
         }
-        if (peopleNumber != null)
+        if (roomDataSearchDto.peopleNumber > 0)
         {
-            roomBasesQuery = roomBasesQuery.Where(a => a.PeopleNumber == peopleNumber);
+            roomBasesQuery = roomBasesQuery.Where(a => a.PeopleNumber == roomDataSearchDto.peopleNumber);
         }
         var roomResponse = new RoomResponseDto();
         var roomResponses = new List<RoomResponseDto>();
@@ -106,6 +114,7 @@ public class RoomUserRepository : IRoomUserRepository
             roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             roomResponses.Add(roomResponse);
         }
+        await _context.SaveChangesAsync();
         return roomResponses;
     }
 
@@ -122,5 +131,49 @@ public class RoomUserRepository : IRoomUserRepository
             return roomSearch;
         }
         return default!;
+    }
+
+    public async Task<IEnumerable<RoomResponseDto>> GetTopNew()
+    {
+        var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).Take(5).ToListAsync();
+        if (roomBases == null)
+        {
+            return default!;
+        }
+        var roomResponse = new RoomResponseDto();
+        var roomResponses = new List<RoomResponseDto>();
+        foreach (var item in roomBases)
+        {
+            await CheckDiscount(item);
+            roomResponse = _mapper.Map<RoomResponseDto>(item);
+            roomResponse.RoomTypeName = item.RoomType.TypeName;
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
+            roomResponses.Add(roomResponse);
+        }
+        await _context.SaveChangesAsync();
+        return roomResponses;
+    }
+    public async Task<IEnumerable<RoomResponseDto>> GetTopOnSale()
+    {
+        var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
+        if (roomBases == null)
+        {
+            return default!;
+        }
+        var roomResponse = new RoomResponseDto();
+        var roomResponses = new List<RoomResponseDto>();
+        foreach (var item in roomBases)
+        {
+            await CheckDiscount(item);
+            roomResponse = _mapper.Map<RoomResponseDto>(item);
+            roomResponse.RoomTypeName = item.RoomType.TypeName;
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
+            roomResponses.Add(roomResponse);
+        }
+        await _context.SaveChangesAsync();
+        var result = roomResponses.Where(a => a.DiscountPrice != 0).OrderByDescending(a => a.DiscountPrice).Take(5);
+        return result;
     }
 }

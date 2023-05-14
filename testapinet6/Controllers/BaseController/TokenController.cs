@@ -8,7 +8,6 @@ namespace WebHotel.Controllers.BaseController;
 
 [ApiController]
 [ApiVersion("3.0")]
-[Authorize]
 [Route("v{version:apiVersion}/token/")]
 public class TokenController : ControllerBase
 {
@@ -33,6 +32,7 @@ public class TokenController : ControllerBase
 
     [HttpPost]
     [Route("revoke")]
+    [Authorize]
     public IActionResult Revoke(TokenRequestDto tokenRequest)
     {
         bool check = _service.Revoke(tokenRequest);

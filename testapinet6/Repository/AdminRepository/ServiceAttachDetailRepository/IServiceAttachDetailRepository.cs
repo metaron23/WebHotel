@@ -7,6 +7,8 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachDetailRepository
     {
         Task<StatusDto> Create(ServiceAttachDetailRequestDto serviceAttach);
 
+        Task<StatusDto> CreateList(ServiceAttachDetailRequestDtos serviceAttachDetailRequestDtos);
+
         Task<IEnumerable<ServiceAttachDetailResponseDto>> GetAll();
 
         Task<StatusDto> Delete(int? id);
