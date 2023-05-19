@@ -25,7 +25,6 @@ namespace WebHotel.DTO.ReservationDtos
         [Required(ErrorMessage = "{0} is required")]
         public string? PhoneNumber { get; set; }
 
-        [Required(ErrorMessage = "{0} is required")]
         public string? Address { get; set; }
     }
 }

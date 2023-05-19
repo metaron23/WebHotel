@@ -61,7 +61,12 @@ public class AuthenUserController : ControllerBase
     [Route("confirm-email-register")]
     public async Task<IActionResult> ConfirmEmailRegister(string email, string code)
     {
-        return Ok(await _authenUserRepository.ConfirmEmailRegister(email, code));
+        var result = await _authenUserRepository.ConfirmEmailRegister(email, code);
+        if (result.StatusCode == 1)
+        {
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPost]

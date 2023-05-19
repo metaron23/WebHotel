@@ -138,7 +138,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
         public async Task CheckDiscount(Room room)
         {
             var discount = await _context.DiscountRoomDetails.Include(a => a.Discount)
-                        .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
+            .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
             if (discount != null)
             {
                 room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
@@ -154,7 +154,6 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
         public async Task<IEnumerable<RoomResponseDto>> GetAll()
         {
             var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
-
             if (roomBases == null)
             {
                 return default!;
@@ -166,7 +165,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 await CheckDiscount(item);
                 roomResponse = _mapper.Map<RoomResponseDto>(item);
                 roomResponse.RoomTypeName = item.RoomType.TypeName;
-                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.ServiceAttachId);
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }
@@ -183,7 +182,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 await CheckDiscount(roomBases);
                 roomResponse = _mapper.Map<RoomResponseDto>(roomBases);
                 roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
-                var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.RoomTypeId);
+                var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.ServiceAttachId);
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 return roomResponse;
             }
@@ -224,7 +223,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
                 await CheckDiscount(item);
                 roomResponse = _mapper.Map<RoomResponseDto>(item);
                 roomResponse.RoomTypeName = item.RoomType.TypeName;
-                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+                var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.ServiceAttachId);
                 roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
                 roomResponses.Add(roomResponse);
             }

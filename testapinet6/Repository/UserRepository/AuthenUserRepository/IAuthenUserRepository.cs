@@ -13,7 +13,7 @@ namespace WebHotel.Repository.UserRepository.AuthenRepository
         //Register with admin
         Task<StatusDto> RegistrationAdmin([FromBody] RegisterAdminDto model);
         //Confirm successful registration by mail
-        Task<bool> ConfirmEmailRegister(string email, string code);
+        Task<StatusDto> ConfirmEmailRegister(string email, string code);
         // Confirm successful change pass
         Task<StatusDto> RequestResetPassword(string? email);
         Task<StatusDto> RequestChangePassword(ForgotPasswordDto forgotPasswordModel);

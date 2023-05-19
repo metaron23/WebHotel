@@ -66,7 +66,7 @@ public class RoomUserRepository : IRoomUserRepository
             await CheckDiscount(roomBases);
             roomResponse = _mapper.Map<RoomResponseDto>(roomBases);
             roomResponse.RoomTypeName = roomBases.RoomType.TypeName;
-            var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.RoomTypeId);
+            var serviceAttachIds = roomBases.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == roomBases.RoomType.Id).Select(a => a.ServiceAttachId);
             roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             return roomResponse;
         }
@@ -110,7 +110,7 @@ public class RoomUserRepository : IRoomUserRepository
             await CheckDiscount(item);
             roomResponse = _mapper.Map<RoomResponseDto>(item);
             roomResponse.RoomTypeName = item.RoomType.TypeName;
-            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.RoomTypeId);
+            var serviceAttachIds = item.RoomType.ServiceAttachDetails.Where(a => a.RoomTypeId == item.RoomType.Id).Select(a => a.ServiceAttachId);
             roomResponse.ServiceAttachs = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.Where(a => serviceAttachIds.Contains(a.Id)).ToListAsync());
             roomResponses.Add(roomResponse);
         }

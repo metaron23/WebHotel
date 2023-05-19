@@ -24,7 +24,7 @@ public partial class Reservation
 
     public string PhoneNumber { get; set; } = null!;
 
-    public string Address { get; set; } = null!;
+    public string? Address { get; set; }
 
     public string RoomId { get; set; } = null!;
 
