@@ -97,6 +97,18 @@ public class ReservationUserController : ControllerBase
         }
         return BadRequest();
     }
+    [HttpGet]
+    [Route("reservation/get-by-id")]
+    public async Task<IActionResult> GetByID([FromQuery] string id)
+    {
+        var reservation = await _context.Reservations.SingleOrDefaultAsync(a => a.Id == id);
+        if (reservation is not null)
+        {
+            var result = _mapper.Map<ReservationGetByIdDto>(reservation);
+            return Ok(result);
+        }
+        return BadRequest();
+    }
 }
 
 public class InfoEditReservationDto
@@ -108,4 +120,37 @@ public class InfoEditReservationDto
     public string PhoneNumber { get; set; } = null!;
 
     public string Address { get; set; } = null!;
+
+    public int? NumberOfPeople { get; set; }
+}
+
+public class ReservationGetByIdDto
+{
+    public string Id { get; set; } = null!;
+
+    public DateTime StartDate { get; set; }
+
+    public float NumberOfDay { get; set; }
+
+    public float NumberOfPeople { get; set; }
+
+    public DateTime EndDate { get; set; }
+
+    public decimal RoomPrice { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public decimal ReservationPrice { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
+
+    public string PhoneNumber { get; set; } = null!;
+
+    public string? Address { get; set; }
+
+    public string RoomId { get; set; } = null!;
 }

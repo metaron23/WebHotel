@@ -18,7 +18,6 @@ namespace WebHotel.DTO.PaymentDtos
         [Required(ErrorMessage = "{0} is required")]
         public int? Status { get; set; }
 
-        [Required(ErrorMessage = "{0} is required")]
         public string? Message { get; set; } = null!;
 
         [Required(ErrorMessage = "{0} is required")]

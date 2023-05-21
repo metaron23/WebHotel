@@ -88,6 +88,4 @@ public class ReservationResponseAdminDto
     public string UserName { get; set; } = null!;
     public bool Status { get; set; }
     public ReservationPayment ReservationPayment { get; set; } = null!;
-
-
 }

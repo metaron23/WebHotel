@@ -2,7 +2,7 @@
 
 public partial class InvoiceReservation
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
 
     public DateTime PayAt { get; set; }
 
@@ -10,7 +10,13 @@ public partial class InvoiceReservation
 
     public decimal PriceReservedRoom { get; set; }
 
+    public bool? SelfPay { get; set; }
+
     public string ReservationId { get; set; } = null!;
+
+    public string CreatorId { get; set; } = null!;
+
+    public virtual ApplicationUser Creator { get; set; } = null!;
 
     public virtual Reservation Reservation { get; set; } = null!;
 }

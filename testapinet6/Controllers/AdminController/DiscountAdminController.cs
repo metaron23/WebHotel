@@ -55,9 +55,27 @@ public class DiscountAdminController : ControllerBase
 
     [HttpGet]
     [Route("get-by-search")]
-    public IActionResult GetBySearch(string? discountCode, string? name, decimal? percentDiscount, DateTime? startAt, DateTime? endAt, string? nameType, string? creatorEmail)
+    public IActionResult GetBySearch(
+        string? discountCode,
+        string? name,
+        decimal? percentDiscount,
+        DateTime? startAt,
+        DateTime? endAt,
+        string? nameType,
+        string? creatorEmail
+    )
     {
-        return Ok(_discountRepository.GetBySearch(discountCode, name, percentDiscount, startAt, endAt, nameType, creatorEmail));
+        return Ok(
+            _discountRepository.GetBySearch(
+                discountCode,
+                name,
+                percentDiscount,
+                startAt,
+                endAt,
+                nameType,
+                creatorEmail
+            )
+        );
     }
 
     [HttpPost]

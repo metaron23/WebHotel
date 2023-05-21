@@ -85,29 +85,26 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.Property(e => e.Image).HasMaxLength(450);
             entity.Property(e => e.CreatedAt).IsRowVersion().IsConcurrencyToken().HasDefaultValueSql("GetDate()");
             entity.Property(e => e.Name).IsRequired(false);
-        });
-        modelBuilder.Entity<ApplicationUser>(b =>
-        {
             // Each User can have many UserClaims
-            b.HasMany(e => e.Claims)
+            entity.HasMany(e => e.Claims)
                 .WithOne(e => e.User)
                 .HasForeignKey(uc => uc.UserId)
                 .IsRequired();
 
             // Each User can have many UserLogins
-            b.HasMany(e => e.Logins)
+            entity.HasMany(e => e.Logins)
                 .WithOne(e => e.User)
                 .HasForeignKey(ul => ul.UserId)
                 .IsRequired();
 
             // Each User can have many UserTokens
-            b.HasMany(e => e.Tokens)
+            entity.HasMany(e => e.Tokens)
                 .WithOne(e => e.User)
                 .HasForeignKey(ut => ut.UserId)
                 .IsRequired();
 
             // Each User can have many entries in the UserRole join table
-            b.HasMany(e => e.UserRoles)
+            entity.HasMany(e => e.UserRoles)
                 .WithOne(e => e.User)
                 .HasForeignKey(ur => ur.UserId)
                 .IsRequired();
@@ -246,19 +243,25 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
             entity.ToTable("InvoiceReservation");
 
+            entity.Property(e => e.Id)
+            .HasMaxLength(255)
+            .HasDefaultValueSql("(newid())");
+
             entity.Property(e => e.PayAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+
+            entity.Property(e => e.SelfPay).HasDefaultValueSql("1");
             entity.Property(e => e.PriceReservedRoom).HasColumnType("decimal(19, 2)");
             entity.Property(e => e.PriceService)
                 .HasDefaultValueSql("((0))")
                 .HasColumnType("decimal(19, 2)");
-            entity.Property(e => e.ReservationId).HasMaxLength(255);
 
-            entity.HasOne(d => d.Reservation).WithMany(p => p.InvoiceReservations)
-                .HasForeignKey(d => d.ReservationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_InvoiceReservation_Reservation");
+            entity.HasOne(d => d.Reservation).WithOne(p => p.InvoiceReservation)
+                .HasForeignKey<InvoiceReservation>(d => d.ReservationId).IsRequired();
+
+            entity.HasOne(d => d.Creator).WithOne(p => p.InvoiceReservation)
+                .HasForeignKey<InvoiceReservation>(d => d.CreatorId);
         });
 
         modelBuilder.Entity<OrderService>(entity =>

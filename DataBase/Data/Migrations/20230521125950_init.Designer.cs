@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20230512141610_init")]
+    [Migration("20230521125950_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -326,6 +326,47 @@ namespace DataBase.Data.Migrations
                     b.ToTable("BlogTypeDetail", (string)null);
                 });
 
+            modelBuilder.Entity("DataBase.Models.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getDate()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Contact", (string)null);
+                });
+
             modelBuilder.Entity("Database.Models.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -508,14 +549,15 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasDefaultValueSql("(newid())");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("PayAt")
                         .ValueGeneratedOnAdd()
@@ -532,15 +574,21 @@ namespace DataBase.Data.Migrations
 
                     b.Property<string>("ReservationId")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool?>("SelfPay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValueSql("1");
 
                     b.HasKey("Id")
                         .HasName("PK__InvoiceR__3214EC07A70F1055");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("CreatorId")
+                        .IsUnique();
 
-                    b.HasIndex("ReservationId");
+                    b.HasIndex("ReservationId")
+                        .IsUnique();
 
                     b.ToTable("InvoiceReservation", (string)null);
                 });
@@ -642,7 +690,6 @@ namespace DataBase.Data.Migrations
                         .HasDefaultValueSql("(newid())");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -665,6 +712,9 @@ namespace DataBase.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("real")
                         .HasDefaultValueSql("1.0");
+
+                    b.Property<int?>("NumberOfPeople")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -770,7 +820,7 @@ namespace DataBase.Data.Migrations
 
                     b.Property<decimal>("PriceTotal")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("decimal(19,2)")
                         .HasDefaultValueSql("0");
 
                     b.Property<string>("ReservationId")
@@ -945,11 +995,11 @@ namespace DataBase.Data.Migrations
 
                     b.Property<decimal?>("Allowance")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("decimal(19,2)")
                         .HasDefaultValueSql("0");
 
                     b.Property<decimal>("BasicSalary")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(19,2)");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
@@ -1022,7 +1072,8 @@ namespace DataBase.Data.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.HasIndex("ServiceAttachId");
+                    b.HasIndex("ServiceAttachId", "RoomTypeId")
+                        .IsUnique();
 
                     b.ToTable("ServiceAttachDetail", (string)null);
                 });
@@ -1280,15 +1331,19 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.HasOne("Database.Models.ApplicationUser", null)
-                        .WithMany("InvoiceReservations")
-                        .HasForeignKey("ApplicationUserId");
-
                     b.HasOne("Database.Models.Reservation", "Reservation")
-                        .WithMany("InvoiceReservations")
-                        .HasForeignKey("ReservationId")
-                        .IsRequired()
-                        .HasConstraintName("FK_InvoiceReservation_Reservation");
+                        .WithOne("InvoiceReservation")
+                        .HasForeignKey("Database.Models.InvoiceReservation", "CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Database.Models.ApplicationUser", "Creator")
+                        .WithOne("InvoiceReservation")
+                        .HasForeignKey("Database.Models.InvoiceReservation", "ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
 
                     b.Navigation("Reservation");
                 });
@@ -1445,7 +1500,8 @@ namespace DataBase.Data.Migrations
 
                     b.Navigation("Discounts");
 
-                    b.Navigation("InvoiceReservations");
+                    b.Navigation("InvoiceReservation")
+                        .IsRequired();
 
                     b.Navigation("Logins");
 
@@ -1491,7 +1547,8 @@ namespace DataBase.Data.Migrations
                 {
                     b.Navigation("DiscountReservationDetails");
 
-                    b.Navigation("InvoiceReservations");
+                    b.Navigation("InvoiceReservation")
+                        .IsRequired();
 
                     b.Navigation("OrderServices");
 

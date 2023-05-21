@@ -2,6 +2,7 @@
 using Database.Models;
 using DataBase.Models;
 using WebHotel.Controllers.AdminController;
+using WebHotel.Controllers.UserController;
 using WebHotel.DTO;
 using WebHotel.DTO.AccountDtos;
 using WebHotel.DTO.BlogDtos;
@@ -98,9 +99,20 @@ namespace WebHotel.Helper
 
             CreateMap<ReservationPayment, ReservationPaymentResponseDto>().ReverseMap();
 
+            CreateMap<ReservationPayment, ReservationPaymentResponseInvoiceDto>().ReverseMap();
+
             CreateMap<ServiceRoom, ServiceRoomCreateDto>().ReverseMap();
 
             CreateMap<ServiceRoom, ServiceRoomResponseDto>().ReverseMap();
+
+            CreateMap<Reservation, InfoEditReservationDto>().ReverseMap();
+
+            CreateMap<Reservation, ReservationGetByIdDto>().ReverseMap();
+
+            CreateMap<Reservation, ReservationResponseInvoiceDto>().ReverseMap();
+
+            CreateMap<InvoiceResponse, InvoiceReservation>().ReverseMap()
+                .ForMember(d => d.Email, o => o.MapFrom(source => source.Creator.Email));
 
             CreateMap<OrderServiceResponseDto, OrderService>().ReverseMap()
                 .ForMember(d => d.CreatorEmail, o => o.MapFrom(s => s.User.Email));

@@ -8,6 +8,8 @@ public partial class Reservation
 
     public float NumberOfDay { get; set; }
 
+    public int? NumberOfPeople { get; set; }
+
     public DateTime EndDate { get; set; }
 
     public decimal RoomPrice { get; set; }
@@ -32,11 +34,11 @@ public partial class Reservation
 
     public virtual ICollection<DiscountReservationDetail> DiscountReservationDetails { get; } = new List<DiscountReservationDetail>();
 
-    public virtual ICollection<InvoiceReservation> InvoiceReservations { get; } = new List<InvoiceReservation>();
 
     public virtual ICollection<OrderService> OrderServices { get; } = new List<OrderService>();
 
     public virtual ICollection<ReservationChat> ReservationChats { get; } = new List<ReservationChat>();
+    public virtual InvoiceReservation InvoiceReservation { get; set; } = null!;
 
     public virtual ReservationPayment ReservationPayment { get; set; } = null!;
 

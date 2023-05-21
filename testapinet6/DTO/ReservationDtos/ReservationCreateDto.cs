@@ -16,6 +16,8 @@ namespace WebHotel.DTO.ReservationDtos
         [Required(ErrorMessage = "{0} is required")]
         public float? NumberOfDay { get; set; }
 
+        public int? NumberOfPeople { get; set; }
+
         [Required(ErrorMessage = "{0} is required")]
         public string? Name { get; set; }
 

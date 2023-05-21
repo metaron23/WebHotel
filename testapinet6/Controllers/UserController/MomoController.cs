@@ -74,7 +74,6 @@ public class MomoController : ControllerBase
             PayUrl = jmessage.GetValue("payUrl").ToString()
         });
     }
-
 }
 
 public class MoMoSecurity

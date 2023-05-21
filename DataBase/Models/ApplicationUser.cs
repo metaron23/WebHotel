@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Database.Models;
 
-public class ApplicationUser : IdentityUser
+public partial class ApplicationUser : IdentityUser
 {
     public string Name { get; set; } = null!;
     public string? Address { get; set; }
@@ -18,8 +18,6 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<DiscountServiceDetail> DiscountServiceDetails { get; } = new List<DiscountServiceDetail>();
 
     public virtual ICollection<Discount> Discounts { get; } = new List<Discount>();
-
-    public virtual ICollection<InvoiceReservation> InvoiceReservations { get; } = new List<InvoiceReservation>();
 
     public virtual ICollection<OrderService> OrderServices { get; } = new List<OrderService>();
 
@@ -37,7 +35,9 @@ public class ApplicationUser : IdentityUser
 
     public virtual ICollection<Blog> Blogs { get; } = new List<Blog>();
 
-    public virtual Salary Salary { get; } = null!;
+    public virtual Salary Salary { get; set; } = null!;
+
+    public virtual InvoiceReservation InvoiceReservation { get; set; } = null!;
 }
 
 public class ApplicationRole : IdentityRole

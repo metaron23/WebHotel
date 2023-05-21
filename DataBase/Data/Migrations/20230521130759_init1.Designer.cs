@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20230514134441_init 3")]
-    partial class init3
+    [Migration("20230521130759_init1")]
+    partial class init1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -549,13 +549,14 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasDefaultValueSql("(newid())");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("PayAt")
@@ -573,15 +574,21 @@ namespace DataBase.Data.Migrations
 
                     b.Property<string>("ReservationId")
                         .IsRequired()
-                        .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool?>("SelfPay")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValueSql("1");
 
                     b.HasKey("Id")
                         .HasName("PK__InvoiceR__3214EC07A70F1055");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("CreatorId")
+                        .IsUnique();
 
-                    b.HasIndex("ReservationId");
+                    b.HasIndex("ReservationId")
+                        .IsUnique();
 
                     b.ToTable("InvoiceReservation", (string)null);
                 });
@@ -683,7 +690,6 @@ namespace DataBase.Data.Migrations
                         .HasDefaultValueSql("(newid())");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -706,6 +712,9 @@ namespace DataBase.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("real")
                         .HasDefaultValueSql("1.0");
+
+                    b.Property<int?>("NumberOfPeople")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -1322,15 +1331,19 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.HasOne("Database.Models.ApplicationUser", null)
-                        .WithMany("InvoiceReservations")
-                        .HasForeignKey("ApplicationUserId");
+                    b.HasOne("Database.Models.ApplicationUser", "Creator")
+                        .WithOne("InvoiceReservation")
+                        .HasForeignKey("Database.Models.InvoiceReservation", "CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Database.Models.Reservation", "Reservation")
-                        .WithMany("InvoiceReservations")
-                        .HasForeignKey("ReservationId")
-                        .IsRequired()
-                        .HasConstraintName("FK_InvoiceReservation_Reservation");
+                        .WithOne("InvoiceReservation")
+                        .HasForeignKey("Database.Models.InvoiceReservation", "ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
 
                     b.Navigation("Reservation");
                 });
@@ -1487,7 +1500,8 @@ namespace DataBase.Data.Migrations
 
                     b.Navigation("Discounts");
 
-                    b.Navigation("InvoiceReservations");
+                    b.Navigation("InvoiceReservation")
+                        .IsRequired();
 
                     b.Navigation("Logins");
 
@@ -1533,7 +1547,8 @@ namespace DataBase.Data.Migrations
                 {
                     b.Navigation("DiscountReservationDetails");
 
-                    b.Navigation("InvoiceReservations");
+                    b.Navigation("InvoiceReservation")
+                        .IsRequired();
 
                     b.Navigation("OrderServices");
 
