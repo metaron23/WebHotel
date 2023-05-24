@@ -9,11 +9,11 @@ namespace WebHotel.Controllers.AdminController;
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/service-attach/")]
 [Authorize(Roles = "Admin")]
-public class SeviceAttachAdminController : ControllerBase
+public class ServiceAttachAdminController : ControllerBase
 {
     private readonly IServiceAttachAdminRepository _serviceAttachRepository;
 
-    public SeviceAttachAdminController(IServiceAttachAdminRepository serviceAttachRepository)
+    public ServiceAttachAdminController(IServiceAttachAdminRepository serviceAttachRepository)
     {
         _serviceAttachRepository = serviceAttachRepository;
     }
@@ -23,6 +23,18 @@ public class SeviceAttachAdminController : ControllerBase
     public async Task<IActionResult> Create([FromBody] ServiceAttachRequestDto serviceAttachDto)
     {
         var result = await _serviceAttachRepository.Create(serviceAttachDto);
+        if (result.StatusCode == 1)
+        {
+            return Ok(result);
+        }
+        return BadRequest(result);
+    }
+
+    [HttpPost]
+    [Route("update")]
+    public async Task<IActionResult> Update([FromBody] ServiceAttachRequestDto serviceAttachDto, [FromQuery] int id)
+    {
+        var result = await _serviceAttachRepository.Update(serviceAttachDto, id);
         if (result.StatusCode == 1)
         {
             return Ok(result);

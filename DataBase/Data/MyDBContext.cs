@@ -260,8 +260,10 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.HasOne(d => d.Reservation).WithOne(p => p.InvoiceReservation)
                 .HasForeignKey<InvoiceReservation>(d => d.ReservationId).IsRequired();
 
-            entity.HasOne(d => d.Creator).WithOne(p => p.InvoiceReservation)
-                .HasForeignKey<InvoiceReservation>(d => d.CreatorId);
+            entity.HasOne(d => d.Creator).WithMany(p => p.InvoiceReservations)
+                .HasForeignKey(d => d.CreatorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_InvoiceReservation_ApplicationUser");
         });
 
         modelBuilder.Entity<OrderService>(entity =>
@@ -347,7 +349,7 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.ToTable("ReservationPayment");
             entity.HasKey(e => e.Id).HasName("PK__Reservat__3214EC07950B4BF3");
 
-            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.CreateAt).HasColumnType("datetime").HasDefaultValueSql("getDate()");
             entity.Property(e => e.PriceTotal).HasDefaultValueSql("0").HasColumnType("decimal(19,2)");
             entity.Property(e => e.Status).HasDefaultValueSql("1");
             entity.Property(e => e.ReservationId).HasMaxLength(255);

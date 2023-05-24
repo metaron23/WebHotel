@@ -28,24 +28,40 @@ public class OrderServiceAdminController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> Create(OrderServiceCreateDto orderServiceCreate)
     {
-        var service = await _context.ServiceRooms.AsNoTracking().SingleOrDefaultAsync(a => a.Id == orderServiceCreate.ServiceRoomId);
+        var service = await _context.ServiceRooms.SingleOrDefaultAsync(a => a.Id == orderServiceCreate.ServiceRoomId);
         var user = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Email)!.Value;
         var creator = await _context.ApplicationUsers.AsNoTracking().SingleOrDefaultAsync(a => a.Email == user);
         if (service is null)
         {
             return BadRequest(new StatusDto { StatusCode = 0, Message = "Service room id not found" });
         }
-        var orderService = new OrderService()
+        if (service.Amount < orderServiceCreate.Amount)
         {
-            Amount = orderServiceCreate.Amount,
-            Price = service.Price,
-            ServiceName = service.Name,
-            ReservationId = orderServiceCreate.ReservationId,
-            ServiceRoomId = service.Id,
-            UserId = creator!.Id
-        };
-        await _context.AddAsync(orderService);
-        service.Amount -= orderService.Amount;
+            return BadRequest(new StatusDto { StatusCode = 0, Message = "Quantity is too large, please order lower " + service.Amount });
+        }
+        var invoice = await _context.InvoiceReservations.SingleOrDefaultAsync(a => a.ReservationId == orderServiceCreate.ReservationId);
+
+        var orderService = await _context.OrderServices.Where(a => a.ReservationId == orderServiceCreate.ReservationId && a.ServiceRoomId == orderServiceCreate.ServiceRoomId).SingleOrDefaultAsync();
+        if (orderService is null)
+        {
+            var orderServiceSave = new OrderService()
+            {
+                Amount = orderServiceCreate.Amount,
+                Price = service.Price,
+                ServiceName = service.Name,
+                ReservationId = orderServiceCreate.ReservationId,
+                ServiceRoomId = service.Id,
+                UserId = creator!.Id
+            };
+            await _context.AddAsync(orderServiceSave);
+        }
+        else
+        {
+            orderService!.Amount += orderServiceCreate.Amount;
+        }
+        var priceService = service.PriceDiscount == 0 ? service.Price : service.PriceDiscount;
+        invoice!.PriceService += priceService * orderServiceCreate!.Amount;
+        service.Amount -= orderServiceCreate.Amount;
         await _context.SaveChangesAsync();
         return Ok(new StatusDto { StatusCode = 1, Message = "Created successfully" });
     }

@@ -111,6 +111,10 @@ namespace WebHotel.Helper
 
             CreateMap<Reservation, ReservationResponseInvoiceDto>().ReverseMap();
 
+            CreateMap<Salary, SalaryCreateDto>().ReverseMap();
+
+            CreateMap<Salary, SalaryResponseDto>().ReverseMap();
+
             CreateMap<InvoiceResponse, InvoiceReservation>().ReverseMap()
                 .ForMember(d => d.Email, o => o.MapFrom(source => source.Creator.Email));
 

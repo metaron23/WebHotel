@@ -47,6 +47,32 @@ public class ServiceRoomAdminController : ControllerBase
         }
         return Ok(_mapper.Map<List<ServiceRoomResponseDto>>(result));
     }
+
+    [HttpGet("delete")]
+    public async Task<IActionResult> Delete([FromQuery] int id)
+    {
+        var result = await _context.ServiceRooms.SingleOrDefaultAsync(a => a.Id == id);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        _context.Remove(result);
+        await _context.SaveChangesAsync();
+        return Ok(new StatusDto { StatusCode = 1, Message = "Deleted successfully" });
+    }
+
+    [HttpPost("update")]
+    public async Task<IActionResult> Update([FromBody] ServiceRoomCreateDto serviceRoom, [FromQuery] int id)
+    {
+        var result = await _context.ServiceRooms.SingleOrDefaultAsync(a => a.Id == id);
+        if (result is null)
+        {
+            return NotFound();
+        }
+        _mapper.Map(serviceRoom, result);
+        await _context.SaveChangesAsync();
+        return Ok(new StatusDto { StatusCode = 1, Message = "Updated successfully" });
+    }
 }
 
 public class ServiceRoomCreateDto

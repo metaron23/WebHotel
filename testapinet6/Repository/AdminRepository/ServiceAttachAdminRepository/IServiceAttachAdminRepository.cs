@@ -10,5 +10,7 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
         Task<IEnumerable<ServiceAttachResponseDto>> GetAll();
 
         Task<StatusDto> Delete(int? id);
+
+        Task<StatusDto> Update(ServiceAttachRequestDto serviceAttachDto, int id);
     }
 }

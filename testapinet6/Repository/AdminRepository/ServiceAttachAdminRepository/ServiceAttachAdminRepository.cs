@@ -33,16 +33,42 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
             }
         }
 
+        public async Task<StatusDto> Update(ServiceAttachRequestDto serviceAttachDto, int id)
+        {
+            var serviceAttachBase = await _context.ServiceAttaches.SingleOrDefaultAsync(
+                a => a.Id == id
+            );
+            if (serviceAttachBase is not null)
+            {
+                var serviceAttach = _mapper.Map(serviceAttachDto, serviceAttachBase);
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return new StatusDto { StatusCode = 1, Message = "Updated successfully" };
+                }
+                catch (Exception ex)
+                {
+                    return new StatusDto { StatusCode = 0, Message = ex.InnerException?.Message };
+                }
+            }
+            else
+            {
+                return new StatusDto { StatusCode = 0, Message = "ID not found" };
+            }
+        }
+
         public async Task<StatusDto> Delete(int? id)
         {
-            var serviceAttach = await _context.ServiceAttaches.SingleOrDefaultAsync(a => a.Id == id);
+            var serviceAttach = await _context.ServiceAttaches.SingleOrDefaultAsync(
+                a => a.Id == id
+            );
             if (serviceAttach is not null)
             {
                 try
                 {
                     _context.ServiceAttaches.Remove(serviceAttach);
                     await _context.SaveChangesAsync();
-                    return new StatusDto { StatusCode = 1, Message = "Successfull deleted " };
+                    return new StatusDto { StatusCode = 1, Message = "Successful deleted " };
                 }
                 catch (Exception ex)
                 {
@@ -54,7 +80,12 @@ namespace WebHotel.Repository.AdminRepository.ServiceAttachRepository
 
         public async Task<IEnumerable<ServiceAttachResponseDto>> GetAll()
         {
-            var serviceAttach = _mapper.Map<List<ServiceAttachResponseDto>>(await _context.ServiceAttaches.AsNoTracking().OrderByDescending(a => a.Id).ToListAsync());
+            var serviceAttach = _mapper.Map<List<ServiceAttachResponseDto>>(
+                await _context.ServiceAttaches
+                    .AsNoTracking()
+                    .OrderByDescending(a => a.Id)
+                    .ToListAsync()
+            );
             return serviceAttach;
         }
     }

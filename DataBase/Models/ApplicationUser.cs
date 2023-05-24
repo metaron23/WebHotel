@@ -37,7 +37,7 @@ public partial class ApplicationUser : IdentityUser
 
     public virtual Salary Salary { get; set; } = null!;
 
-    public virtual InvoiceReservation InvoiceReservation { get; set; } = null!;
+    public ICollection<InvoiceReservation> InvoiceReservations { get; set; } = null!;
 }
 
 public class ApplicationRole : IdentityRole

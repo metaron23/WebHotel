@@ -18,13 +18,10 @@ namespace WebHotel.DTO.ReservationDtos
 
         public int? NumberOfPeople { get; set; }
 
-        [Required(ErrorMessage = "{0} is required")]
         public string? Name { get; set; }
 
-        [Required(ErrorMessage = "{0} is required")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "{0} is required")]
         public string? PhoneNumber { get; set; }
 
         public string? Address { get; set; }
