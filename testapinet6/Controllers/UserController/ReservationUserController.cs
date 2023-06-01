@@ -8,6 +8,7 @@ using System.Security.Claims;
 using WebHotel.Commom;
 using WebHotel.DTO;
 using WebHotel.DTO.ReservationDtos;
+using WebHotel.DTO.ReservationPayment;
 using WebHotel.Repository.UserRepository.ReservationRepository;
 using WebHotel.Service.NotifiHubService;
 
@@ -80,10 +81,20 @@ public class ReservationUserController : ControllerBase
     {
         var email = User.FindFirst(ClaimTypes.Email)!.Value;
         var user = await _context.ApplicationUsers.SingleOrDefaultAsync(a => a.Email == email);
+
         var reservationSuccessId = _context.ReservationPayments.Where(a => a.Status == 1).Select(a => a.ReservationId);
-        var result = await _context.Reservations.Where(a => reservationSuccessId.Contains(a.Id)).Where(a => a.UserId == user!.Id).ToListAsync();
+
+        var resultTemp = await _context.Reservations.Where(a => reservationSuccessId.Contains(a.Id)).Where(a => a.UserId == user!.Id).OrderByDescending(a => a.CreatedAt).ToListAsync();
+
+        var result = _mapper.Map<List<ReservationResponseDto>>(resultTemp);
+        result.ForEach(a =>
+        {
+            a.ReservationPayment = _mapper.Map<ReservationPaymentResponseDto>(_context.ReservationPayments.SingleOrDefault(b => b.ReservationId == a.Id));
+        });
         return Ok(result);
+
     }
+
     [HttpPost]
     [Route("reservation/edit-info")]
     public async Task<IActionResult> EditInfo([FromBody] InfoEditReservationDto infoEditReservation, [FromQuery] string id)
@@ -102,9 +113,11 @@ public class ReservationUserController : ControllerBase
     public async Task<IActionResult> GetByID([FromQuery] string id)
     {
         var reservation = await _context.Reservations.SingleOrDefaultAsync(a => a.Id == id);
+        var room = await _context.Rooms.SingleOrDefaultAsync(a => a.Id == reservation.RoomId);
         if (reservation is not null)
         {
             var result = _mapper.Map<ReservationGetByIdDto>(reservation);
+            result.NumberOfPeopleMax = room.PeopleNumber;
             return Ok(result);
         }
         return BadRequest();
@@ -133,6 +146,8 @@ public class ReservationGetByIdDto
     public float NumberOfDay { get; set; }
 
     public float NumberOfPeople { get; set; }
+
+    public float NumberOfPeopleMax { get; set; }
 
     public DateTime EndDate { get; set; }
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20230522123630_init2")]
-    partial class init2
+    [Migration("20230525031717_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -394,7 +394,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal>("DiscountPercent")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<int>("DiscountTypeId")
                         .HasColumnType("int");
@@ -413,7 +415,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getdate()");
 
                     b.HasKey("Id")
                         .HasName("PK__Discount__3214EC078ED86676");
@@ -802,7 +806,9 @@ namespace DataBase.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getDate()");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -1099,10 +1105,14 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("ntext");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<decimal?>("PriceDiscount")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.HasKey("Id")
                         .HasName("PK__ServiceR__3214EC077BECCD82");

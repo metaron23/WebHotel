@@ -141,7 +141,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
             .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
             if (discount != null)
             {
-                room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
+                room.DiscountPrice = room.CurrentPrice * (100 - discount.Discount.DiscountPercent) / 100;
                 _context.Entry(room).State = EntityState.Modified;
             }
             else
@@ -153,7 +153,7 @@ namespace WebHotel.Repository.AdminRepository.RoomRepository
 
         public async Task<IEnumerable<RoomResponseDto>> GetAll()
         {
-            var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).AsNoTracking().OrderByDescending(a => a.CreatedAt).ToListAsync();
+            var roomBases = await _context.Rooms.Include(a => a.RoomType).Include(a => a.RoomType.ServiceAttachDetails).OrderByDescending(a => a.CreatedAt).AsNoTracking().ToListAsync();
             if (roomBases == null)
             {
                 return default!;

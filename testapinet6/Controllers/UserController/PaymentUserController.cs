@@ -29,10 +29,14 @@ public class PaymentUserController : ControllerBase
     [HttpPost("invoice/create")]
     public async Task<IActionResult> PayMent(PaymentRequestFullDto paymentRequestFull)
     {
-        var reservation = await _context.Reservations.SingleOrDefaultAsync(a => a.Id == paymentRequestFull.ReservationId!);
+        var reservation = await _context.Reservations.SingleOrDefaultAsync(
+            a => a.Id == paymentRequestFull.ReservationId!
+        );
         if (reservation is null)
         {
-            return BadRequest(new StatusDto { StatusCode = 0, Message = "Reservation ID is not valid" });
+            return BadRequest(
+                new StatusDto { StatusCode = 0, Message = "Reservation ID is not valid" }
+            );
         }
         if (paymentRequestFull.Status != 1)
         {
@@ -42,35 +46,47 @@ public class PaymentUserController : ControllerBase
         reservationPayment.CreateAt = DateTime.Now;
         await _context.ReservationPayments.AddAsync(reservationPayment);
         var email = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Email)!.Value;
+        var roles = User.Claims.Where(a => a.Type == ClaimTypes.Role).Select(a => a.Value).ToList();
+
         var creator = await _context.ApplicationUsers.SingleOrDefaultAsync(a => a.Email == email);
-        InvoiceReservation invoid = new InvoiceReservation()
+        InvoiceReservation invoice;
+
+        invoice = new InvoiceReservation()
         {
             PayAt = DateTime.Now,
             PriceReservedRoom = reservation.ReservationPrice,
-            PriceService = _context.OrderServices.Where(a => a.ReservationId == reservation.Id).Sum(a => a.Price * a.Amount),
+            PriceService = _context.OrderServices
+                .Where(a => a.ReservationId == reservation.Id)
+                .Sum(a => a.Price * a.Amount),
             ReservationId = reservation.Id,
-            //CreatorEmail = creator!.Email,
-            SelfPay = true,
+            CreatorId = creator!.Id,
+            SelfPay = false,
         };
+
         try
         {
-            await _context.InvoiceReservations.AddAsync(invoid);
+            await _context.InvoiceReservations.AddAsync(invoice);
             await _context.SaveChangesAsync();
             return Ok(new StatusDto { StatusCode = 1, Message = "Payment successful" });
-
         }
         catch (Exception ex)
         {
             return BadRequest(ex.InnerException!.Message);
         }
-
     }
+
     [AllowAnonymous]
     [HttpGet("invoice/get-all")]
     public async Task<IActionResult> GetAll()
     {
         var invoiceFulls = new List<InvoiceResponse>();
-        var invoiceBases = await _context.InvoiceReservations.Include(a => a.Creator).Include(a => a.Reservation).Include(a => a.Reservation.ReservationPayment).Include(a => a.Reservation.Room).ToListAsync();
+        var invoiceBases = await _context.InvoiceReservations
+            .Include(a => a.Creator)
+            .Include(a => a.Reservation)
+            .Include(a => a.Reservation.ReservationPayment)
+            .Include(a => a.Reservation.Room)
+            .OrderByDescending(a => a.PayAt)
+            .ToListAsync();
         if (invoiceBases is null)
         {
             return NotFound();
@@ -79,7 +95,9 @@ public class PaymentUserController : ControllerBase
         {
             var temp = _mapper.Map<InvoiceResponse>(a);
             temp.Reservation = _mapper.Map<ReservationResponseInvoiceDto>(a.Reservation);
-            temp.ReservationPayment = _mapper.Map<ReservationPaymentResponseInvoiceDto>(a.Reservation.ReservationPayment);
+            temp.ReservationPayment = _mapper.Map<ReservationPaymentResponseInvoiceDto>(
+                a.Reservation.ReservationPayment
+            );
             temp.Room = _mapper.Map<RoomResponseDto>(a.Reservation.Room);
             invoiceFulls.Add(temp);
         });
@@ -106,8 +124,8 @@ public class InvoiceResponse
     public virtual ReservationPaymentResponseInvoiceDto ReservationPayment { get; set; } = null!;
 
     public virtual RoomResponseDto Room { get; set; } = null!;
-
 }
+
 public class ReservationResponseInvoiceDto
 {
     public DateTime StartDate { get; set; }

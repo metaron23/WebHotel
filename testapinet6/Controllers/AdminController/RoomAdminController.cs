@@ -8,7 +8,7 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/room/")]
-[Authorize(Roles = "Admin")]
+// [Authorize(Roles = "Admin")]
 public class RoomAdminController : ControllerBase
 {
     private readonly IRoomAdminRepository _roomAdminRepository;

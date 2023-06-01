@@ -27,7 +27,7 @@ public class ReservationUserRepository : IReservationUserRepository
         {
             var reservation = await context1.Reservations.SingleOrDefaultAsync(a => a.Id == id);
             var reservationPayment = await context1.ReservationPayments.SingleOrDefaultAsync(a => a.ReservationId == id);
-            if (reservationPayment == null || reservationPayment.Status != 1 || reservation == null)
+            if (reservationPayment == null && reservation != null)
             {
                 context1.Remove(reservation!);
                 await context1.SaveChangesAsync();

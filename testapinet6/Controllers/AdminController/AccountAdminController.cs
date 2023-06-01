@@ -25,7 +25,7 @@ public class AccountAdminController : ControllerBase
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
-        var accounts = _mapper.Map<List<AccountResponseDto>>(await _context.ApplicationUsers.ToListAsync());
+        var accounts = _mapper.Map<List<AccountResponseDto>>(await _context.ApplicationUsers.Include(a => a.UserRoles).ThenInclude(a => a.Role).OrderByDescending(a => a.CreatedAt).ToListAsync());
 
         return Ok(accounts);
     }
@@ -35,7 +35,7 @@ public class AccountAdminController : ControllerBase
     {
         var employeeId = await _context.ApplicationUserRoles.Include(a => a.Role).Where(a => a.Role!.Name == UserRoles.Employee || a.UserId == UserRoles.Manager).Select(a => a.UserId).ToListAsync();
 
-        var employee = await _context.ApplicationUsers.Where(a => employeeId.Contains(a.Id)).ToListAsync();
+        var employee = await _context.ApplicationUsers.Where(a => employeeId.Contains(a.Id)).Include(a => a.UserRoles).ThenInclude(a => a.Role).ToListAsync();
 
         var accounts = _mapper.Map<List<AccountResponseDto>>(employee);
 
@@ -47,7 +47,7 @@ public class AccountAdminController : ControllerBase
     {
         var employeeId = await _context.ApplicationUserRoles.Include(a => a.Role).Where(a => a.Role!.Name == UserRoles.Employee).Select(a => a.UserId).ToListAsync();
 
-        var employee = await _context.ApplicationUsers.Where(a => employeeId.Contains(a.Id)).ToListAsync();
+        var employee = await _context.ApplicationUsers.Where(a => employeeId.Contains(a.Id)).Include(a => a.UserRoles).ThenInclude(a => a.Role).OrderByDescending(a => a.CreatedAt).ToListAsync();
 
         var accounts = _mapper.Map<List<AccountResponseDto>>(employee);
 
@@ -59,7 +59,7 @@ public class AccountAdminController : ControllerBase
     {
         var managerId = await _context.ApplicationUserRoles.Include(a => a.Role).Where(a => a.Role!.Name == UserRoles.Manager).Select(a => a.UserId).ToListAsync();
 
-        var manager = await _context.ApplicationUsers.Where(a => managerId.Contains(a.Id)).ToListAsync();
+        var manager = await _context.ApplicationUsers.Where(a => managerId.Contains(a.Id)).Include(a => a.UserRoles).ThenInclude(a => a.Role).OrderByDescending(a => a.CreatedAt).ToListAsync();
 
         var accounts = _mapper.Map<List<AccountResponseDto>>(manager);
 
@@ -71,7 +71,7 @@ public class AccountAdminController : ControllerBase
     {
         var userId = await _context.ApplicationUserRoles.Include(a => a.Role).Where(a => a.Role!.Name == UserRoles.User).Select(a => a.UserId).ToListAsync();
 
-        var user = await _context.ApplicationUsers.Where(a => userId.Contains(a.Id)).ToListAsync();
+        var user = await _context.ApplicationUsers.Where(a => userId.Contains(a.Id)).Include(a => a.UserRoles).ThenInclude(a => a.Role).OrderByDescending(a => a.CreatedAt).ToListAsync();
 
         var accounts = _mapper.Map<List<AccountResponseDto>>(user);
 

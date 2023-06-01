@@ -15,7 +15,7 @@ public class MomoController : ControllerBase
     public MomoController() { }
 
     [HttpPost("payment/momoQR")]
-    public IActionResult PostQR(MomoRequestDto momoRequestDto)
+    public IActionResult PostQR([FromBody] MomoRequestDto momoRequestDto)
     {
         string endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
         string partnerCode = "MOMO5RGX20191128";

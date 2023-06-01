@@ -15,23 +15,35 @@ var builder = WebApplication.CreateBuilder(args);
 #region Cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(
+        name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "http://localhost:8000")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-        });
+            policy
+                .WithOrigins(
+                    "http://localhost:4200",
+                    "http://localhost:8000",
+                    "https://user.webhotel.click",
+                    "https://admin.webhotel.click"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        }
+    );
 });
 #endregion
 
 builder.Services.AddControllers();
 
-
 #region DB Context
-builder.Services.AddDbContext<MyDBContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"), o => o.CommandTimeout(300)));
+builder.Services.AddDbContext<MyDBContext>(
+    options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("defaultConnection"),
+            o => o.CommandTimeout(300)
+        )
+);
 #endregion
 
 #region Service Custom
@@ -71,12 +83,14 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+var apiVersionDescriptionProvider =
+    app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
 app.UseSwagger();
 
@@ -84,7 +98,10 @@ app.UseSwaggerUI(options =>
 {
     foreach (var desc in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {
-        options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
+        options.SwaggerEndpoint(
+            $"../swagger/{desc.GroupName}/swagger.json",
+            desc.ApiVersion.ToString()
+        );
         options.DefaultModelsExpandDepth(-1);
         options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
     }
@@ -101,4 +118,3 @@ app.MapControllers();
 app.MapHub<HubService>("/hub");
 
 app.Run();
-

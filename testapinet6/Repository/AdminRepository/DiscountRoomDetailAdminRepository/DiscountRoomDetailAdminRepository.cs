@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Database.Data;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 using WebHotel.DTO;
 using WebHotel.DTO.DiscountRoomDetailDtos;
 using WebHotel.Repository.AdminRepository.DiscountRoomDetailAdminRepository;
@@ -19,7 +20,18 @@ namespace WebHotel.Repository.AdminRepository.DiscountRoomDetailRepository
         }
         public async Task<StatusDto> Create(DiscountRoomDetailRequest discountRoomDetailRequest, string email)
         {
-            var user = _context.ApplicationUsers.SingleOrDefault(a => a.Email == email);
+            var user = await _context.ApplicationUsers.SingleOrDefaultAsync(a => a.Email == email);
+            var discountRoomRequest = await _context.Discounts.SingleOrDefaultAsync(a => a.Id == discountRoomDetailRequest.DiscountId);
+            var discountDetails = await _context.DiscountRoomDetails.Where(a => a.RoomId == discountRoomDetailRequest.RoomId).Where(a => a.Discount.StartAt < discountRoomRequest!.EndAt && a.Discount.EndAt > discountRoomRequest.StartAt).ToListAsync();
+
+            if (discountRoomRequest is null)
+            {
+                return new StatusDto { StatusCode = 0, Message = "Room not found" };
+            }
+            if (discountDetails.Count != 0)
+            {
+                return new StatusDto { StatusCode = 0, Message = "Room has added discount code at this time" };
+            }
             if (user != null)
             {
                 var discountDetail = _mapper.Map<DiscountRoomDetail>(discountRoomDetailRequest);

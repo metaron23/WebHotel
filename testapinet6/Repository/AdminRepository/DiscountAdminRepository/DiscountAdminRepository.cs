@@ -56,7 +56,7 @@ namespace WebHotel.Repository.AdminRepository.DiscountRepository
 
         public async Task<IEnumerable<DiscountResponseDto>> GetAll()
         {
-            var discountBase = await _context.Discounts.AsNoTracking().Include(a => a.Creator).Include(a => a.Creator.UserRoles).ThenInclude(a => a.Role).Include(a => a.DiscountType).ToListAsync();
+            var discountBase = await _context.Discounts.AsNoTracking().Include(a => a.Creator).Include(a => a.Creator.UserRoles).ThenInclude(a => a.Role).Include(a => a.DiscountType).OrderByDescending(a => a.Id).ToListAsync();
             if (discountBase == null)
             {
                 return default!;
@@ -78,7 +78,7 @@ namespace WebHotel.Repository.AdminRepository.DiscountRepository
 
         public IEnumerable<DiscountResponseDto> GetBySearch(string? discountCode, string? name, decimal? percentDiscount, DateTime? startAt, DateTime? endAt, string? nameType, string? creatorEmail)
         {
-            var discountBase = _context.Discounts.AsNoTracking().Include(a => a.Creator).Include(a => a.Creator.UserRoles).ThenInclude(a => a.Role).Include(a => a.DiscountType).AsEnumerable();
+            var discountBase = _context.Discounts.AsNoTracking().Include(a => a.Creator).Include(a => a.Creator.UserRoles).ThenInclude(a => a.Role).Include(a => a.DiscountType).OrderByDescending(a => a.Id).AsEnumerable();
 
             if (discountCode?.Length > 0)
             {

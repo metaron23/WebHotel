@@ -29,7 +29,7 @@ public class ReservationAdminController : ControllerBase
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
-        var reservations = await _context.Reservations.Include(a => a.Room).Include(a => a.ReservationPayment).Where(a => a.ReservationPayment != null).ToListAsync();
+        var reservations = await _context.Reservations.Include(a => a.Room).Include(a => a.ReservationPayment).Where(a => a.ReservationPayment != null).OrderByDescending(a => a.CreatedAt).ToListAsync();
         reservations.ForEach(a => a.ReservationPayment = new ReservationPayment
         {
             Id = a.ReservationPayment.Id,
@@ -83,7 +83,7 @@ public class ReservationAdminController : ControllerBase
         {
             var reservation = await context1.Reservations.SingleOrDefaultAsync(a => a.Id == id);
             var reservationPayment = await context1.ReservationPayments.SingleOrDefaultAsync(a => a.ReservationId == id);
-            if (reservationPayment == null || reservationPayment.Status != 1 || reservation == null)
+            if (reservationPayment == null && reservation != null)
             {
                 context1.Remove(reservation!);
                 await context1.SaveChangesAsync();

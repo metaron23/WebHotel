@@ -35,8 +35,6 @@ public partial class ApplicationUser : IdentityUser
 
     public virtual ICollection<Blog> Blogs { get; } = new List<Blog>();
 
-    public virtual Salary Salary { get; set; } = null!;
-
     public ICollection<InvoiceReservation> InvoiceReservations { get; set; } = null!;
 }
 

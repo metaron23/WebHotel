@@ -71,8 +71,6 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
     public virtual DbSet<BlogTypeDetail> BlogTypeDetails { get; set; }
 
-    public virtual DbSet<Salary> Salarys { get; set; }
-
     public virtual DbSet<Contact> Contacts { get; set; }
 
 
@@ -134,12 +132,12 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
 
             entity.Property(e => e.CreatorId).HasMaxLength(450);
             entity.Property(e => e.DiscountCode).HasMaxLength(255);
-            entity.Property(e => e.DiscountPercent).HasColumnType("decimal(19, 2)");
+            entity.Property(e => e.DiscountPercent).HasColumnType("decimal(19, 2)").HasDefaultValueSql("0");
             entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.IsPermanent).HasDefaultValueSql("((0))");
             entity.Property(e => e.Active).HasDefaultValueSql("((1))");
             entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.StartAt).HasColumnType("datetime");
+            entity.Property(e => e.StartAt).HasColumnType("datetime").HasDefaultValueSql("getdate()");
 
             entity.HasOne(d => d.Creator).WithMany(p => p.Discounts)
                 .HasForeignKey(d => d.CreatorId)
@@ -484,8 +482,8 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
             entity.Property(e => e.Amount).HasDefaultValueSql("((0))");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Picture).HasColumnType("ntext");
-            entity.Property(e => e.Price).HasColumnType("decimal(19, 2)");
-            entity.Property(e => e.PriceDiscount).HasColumnType("decimal(19, 2)");
+            entity.Property(e => e.Price).HasColumnType("decimal(19, 2)").HasDefaultValueSql("0");
+            entity.Property(e => e.PriceDiscount).HasColumnType("decimal(19, 2)").HasDefaultValueSql("0");
         });
 
         modelBuilder.Entity<TokenInfo>(entity =>
@@ -543,18 +541,6 @@ public partial class MyDBContext : IdentityDbContext<ApplicationUser, Applicatio
                 .HasForeignKey(d => d.BlogTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BlogTypeDetail_Blog");
-        });
-
-        modelBuilder.Entity<Salary>(entity =>
-        {
-            entity.ToTable("Salary");
-            entity.HasKey(a => a.Id).HasName("PK_Salary");
-            entity.HasOne(a => a.Employee).WithOne(a => a.Salary)
-                    .HasForeignKey<Salary>(a => a.EmployeeId).IsRequired();
-            entity.Property(a => a.BasicSalary).IsRequired().HasColumnType("decimal(19,2)");
-            entity.Property(a => a.NumberOfDays).HasDefaultValueSql("0");
-            entity.Property(a => a.Allowance).HasDefaultValueSql("0").HasColumnType("decimal(19, 2)");
-            entity.Property(a => a.WorkTime).HasColumnType("datetime").HasDefaultValueSql("getDate()");
         });
 
         modelBuilder.Entity<Contact>(e =>

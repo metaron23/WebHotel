@@ -39,8 +39,8 @@ public class RoleAdminController : ControllerBase
         return Ok(new StatusDto { StatusCode = 1, Message = "Created successfully" });
     }
 
-    [HttpPost("get-all")]
-    public async Task<IActionResult> GetAll(RoleResponseDto roleResponse)
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll()
     {
         var roles = await _context.ApplicationRoles.ToListAsync();
         if (roles.Count == 0)

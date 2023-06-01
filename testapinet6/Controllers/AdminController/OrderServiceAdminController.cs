@@ -69,7 +69,7 @@ public class OrderServiceAdminController : ControllerBase
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
-        var result = _mapper.Map<List<OrderServiceResponseDto>>(await _context.OrderServices.AsNoTracking().Include(a => a.User).ToListAsync());
+        var result = _mapper.Map<List<OrderServiceResponseDto>>(await _context.OrderServices.AsNoTracking().Include(a => a.User).OrderByDescending(a => a.Id).ToListAsync());
         if (result.Count == 0)
         {
             return NotFound();

@@ -392,7 +392,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal>("DiscountPercent")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<int>("DiscountTypeId")
                         .HasColumnType("int");
@@ -411,7 +413,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getdate()");
 
                     b.HasKey("Id")
                         .HasName("PK__Discount__3214EC078ED86676");
@@ -984,45 +988,6 @@ namespace DataBase.Data.Migrations
                     b.ToTable("RoomType", (string)null);
                 });
 
-            modelBuilder.Entity("DataBase.Models.Salary", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<decimal?>("Allowance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(19,2)")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<decimal>("BasicSalary")
-                        .HasColumnType("decimal(19,2)");
-
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("NumberOfDays")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<DateTime?>("WorkTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("getDate()");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Salary");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique();
-
-                    b.ToTable("Salary", (string)null);
-                });
-
             modelBuilder.Entity("Database.Models.ServiceAttach", b =>
                 {
                     b.Property<int>("Id")
@@ -1099,10 +1064,14 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("ntext");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<decimal?>("PriceDiscount")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.HasKey("Id")
                         .HasName("PK__ServiceR__3214EC077BECCD82");
@@ -1448,17 +1417,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("DataBase.Models.Salary", b =>
-                {
-                    b.HasOne("Database.Models.ApplicationUser", "Employee")
-                        .WithOne("Salary")
-                        .HasForeignKey("DataBase.Models.Salary", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("Database.Models.ServiceAttachDetail", b =>
                 {
                     b.HasOne("Database.Models.RoomType", "RoomType")
@@ -1508,9 +1466,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("OrderServices");
 
                     b.Navigation("Reservations");
-
-                    b.Navigation("Salary")
-                        .IsRequired();
 
                     b.Navigation("Tokens");
 

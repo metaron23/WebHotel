@@ -94,4 +94,19 @@ public class AuthenUserController : ControllerBase
             return BadRequest(status);
         }
     }
+
+    [HttpPost]
+    [Route("change-pass-logged-in")]
+    public async Task<IActionResult> ChangePassLoggedIn(ChangePassLoggedInRequestDto changePassLoggedInRequestDto)
+    {
+        var status = await _authenUserRepository.ChangePassLoggedIn(changePassLoggedInRequestDto);
+        if (ModelState.IsValid && status.StatusCode == 1)
+        {
+            return Ok(status);
+        }
+        else
+        {
+            return BadRequest(status);
+        }
+    }
 }

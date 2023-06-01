@@ -25,7 +25,7 @@ public class RoomUserRepository : IRoomUserRepository
             .Where(a => a.RoomId == room.Id).Where(a => a.Discount.StartAt <= DateTime.Now).Where(a => a.Discount.EndAt >= DateTime.Now).Where(a => a.Discount.AmountUse > 0).SingleOrDefaultAsync();
         if (discount != null)
         {
-            room.DiscountPrice = room.CurrentPrice * discount.Discount.DiscountPercent / 100;
+            room.DiscountPrice = room.CurrentPrice * (100 - discount.Discount.DiscountPercent) / 100;
             _context.Entry(room).State = EntityState.Modified;
         }
         else

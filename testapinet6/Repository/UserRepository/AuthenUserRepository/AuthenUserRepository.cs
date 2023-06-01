@@ -25,14 +25,15 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
     private readonly IMailService _mailService;
     private readonly IConfiguration _configuration;
 
-    public AuthenUserRepository(MyDBContext context,
+    public AuthenUserRepository(
+        MyDBContext context,
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         ITokenRepository tokenService,
         SignInManager<ApplicationUser> signInManager,
         IMailService mailService,
         IConfiguration configuration
-        )
+    )
     {
         _context = context;
         _userManager = userManager;
@@ -45,20 +46,28 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
 
     public async Task<object> Login([FromBody] LoginDto model)
     {
-        var user = _context.ApplicationUsers.SingleOrDefault(a => a.Email == model.Email || a.UserName == model.Email);
+        var user = _context.ApplicationUsers.SingleOrDefault(
+            a => a.Email == model.Email || a.UserName == model.Email
+        );
 
         if (user != null)
         {
             if (user.LockoutEnd >= DateTime.UtcNow)
             {
-                return
-                new StatusDto
+                return new StatusDto
                 {
                     StatusCode = 0,
-                    Message = "Account has been locked because of wrong input 3 times! Unlocking times are: " + user.LockoutEnd.Value.AddHours(7),
+                    Message =
+                        "Account has been locked because of wrong input 3 times! Unlocking times are: "
+                        + user.LockoutEnd.Value.AddHours(7),
                 };
             }
-            var check = await _signInManager.PasswordSignInAsync(user, model.Password!, false, true);
+            var check = await _signInManager.PasswordSignInAsync(
+                user,
+                model.Password!,
+                false,
+                true
+            );
 
             if (check.Succeeded)
             {
@@ -66,9 +75,9 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
 
                 var authClaims = new List<Claim>
                 {
-                new Claim(ClaimTypes.Name, user.UserName!),
-                new Claim(ClaimTypes.Email, user.Email!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(ClaimTypes.Email, user.Email!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
                 foreach (var userRole in userRoles)
@@ -101,11 +110,7 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
                 }
                 catch (Exception ex)
                 {
-                    return new StatusDto
-                    {
-                        StatusCode = 0,
-                        Message = ex.Message,
-                    };
+                    return new StatusDto { StatusCode = 0, Message = ex.Message, };
                 }
 
                 return new LoginResponseDto
@@ -115,11 +120,7 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
                 };
             }
         }
-        return new StatusDto
-        {
-            StatusCode = 0,
-            Message = "Wrong account or password!",
-        };
+        return new StatusDto { StatusCode = 0, Message = "Wrong account or password!", };
     }
 
     public async Task<StatusDto> Registration([FromBody] RegisterDto model)
@@ -178,23 +179,26 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
 
         string code = HttpUtility.UrlEncode(codeBase);
 
-        var param = new Dictionary<string, string?>
-        {
-            {"email", model.Email },
-            {"code", code }
+        var param = new Dictionary<string, string?> { { "email", model.Email }, { "code", code } };
+        string callBack = QueryHelpers.AddQueryString(
+            _configuration["URL_FRONT_END"]!.ToString() + "/confirm-register",
+            param
+        );
 
-        };
-        string callBack = QueryHelpers.AddQueryString(_configuration["URL_FRONT_END"]!.ToString() + "/confirm-register", param);
-
-        if (_mailService.SendMail(new EmailRequestDto
-        {
-            To = user.Email,
-            Subject = "Mail confim registed",
-            Body = "<a href=\"" + callBack + "\">Link Confim</a>"
-        }))
+        if (
+            _mailService.SendMail(
+                new EmailRequestDto
+                {
+                    To = user.Email,
+                    Subject = "Mail confim registed",
+                    Body = "<a href=\"" + callBack + "\">Link Confim</a>"
+                }
+            )
+        )
         {
             status.StatusCode = 1;
-            status.Message = "Successfully created new account. Please check your email to activate your account!";
+            status.Message =
+                "Successfully created new account. Please check your email to activate your account!";
         }
         else
         {
@@ -216,7 +220,6 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
                 if (result.Succeeded == true)
                 {
                     return new StatusDto { StatusCode = 1, Message = "Confirm successfully" };
-
                 }
                 return new StatusDto { StatusCode = 0, Message = "Token has expired" };
             }
@@ -231,7 +234,10 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
     public async Task<StatusDto> RegistrationAdmin([FromBody] RegisterAdminDto model)
     {
         var status = new StatusDto();
-        var userExists = _context.ApplicationUsers.AsNoTracking().Where(a => a.Email == model.Email || a.UserName == model.UserName).SingleOrDefault();
+        var userExists = _context.ApplicationUsers
+            .AsNoTracking()
+            .Where(a => a.Email == model.Email || a.UserName == model.UserName)
+            .SingleOrDefault();
         if (userExists != null)
         {
             status.StatusCode = 0;
@@ -283,12 +289,19 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
 
             if (check.Succeeded)
             {
-                _mailService.SendMail(new EmailRequestDto
-                {
-                    To = user.Email,
-                    Subject = "Mail reset account password!",
-                    Body = "Chào bạn, " + user.Name + "! Your new password is: " + password + ". Please do not change your password after logging in!"
-                });
+                _mailService.SendMail(
+                    new EmailRequestDto
+                    {
+                        To = user.Email,
+                        Subject = "Mail reset account password!",
+                        Body =
+                            "Chào bạn, "
+                            + user.Name
+                            + "! Your new password is: "
+                            + password
+                            + ". Please do not change your password after logging in!"
+                    }
+                );
                 status.StatusCode = 1;
                 status.Message = "Please check the test box to get a new password!";
                 return status;
@@ -296,7 +309,8 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
             else
             {
                 status.StatusCode = 0;
-                status.Message = "There was an error during resetting the new password! Please try again!";
+                status.Message =
+                    "There was an error during resetting the new password! Please try again!";
             }
         }
         status.StatusCode = 0;
@@ -311,19 +325,23 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
         {
             return new StatusDto { StatusCode = 0, Message = "Email does not exist" };
         }
-        string token = HttpUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
+        string token = HttpUtility.UrlEncode(
+            await _userManager.GeneratePasswordResetTokenAsync(user)
+        );
         var param = new Dictionary<string, string?>
         {
-            {"token", token },
-            {"email", forgotPasswordModel.Email }
+            { "token", token },
+            { "email", forgotPasswordModel.Email }
         };
         var callBack = QueryHelpers.AddQueryString(forgotPasswordModel.ClientURI!, param);
-        _mailService.SendMail(new EmailRequestDto
-        {
-            To = user.Email,
-            Subject = "Mail confim change pass",
-            Body = "Change password link: <a href=\"" + callBack + "\">Click Confirm</a>"
-        });
+        _mailService.SendMail(
+            new EmailRequestDto
+            {
+                To = user.Email,
+                Subject = "Mail confim change pass",
+                Body = "Change password link: <a href=\"" + callBack + "\">Click Confirm</a>"
+            }
+        );
         return new StatusDto { StatusCode = 1, Message = "Please check mail to change pass" };
     }
 
@@ -332,14 +350,40 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
         var user = await _userManager.FindByEmailAsync(resetPasswordModel.Email!);
         if (user != null)
         {
-            var check = await _userManager.ResetPasswordAsync(user!, HttpUtility.UrlDecode(resetPasswordModel.Token), resetPasswordModel.NewPassword!);
+            var check = await _userManager.ResetPasswordAsync(
+                user!,
+                HttpUtility.UrlDecode(resetPasswordModel.Token),
+                resetPasswordModel.NewPassword!
+            );
             if (check.Succeeded)
             {
                 return new StatusDto { StatusCode = 1, Message = "Change pass successfull" };
             }
             return new StatusDto { StatusCode = 0, Message = "Change pass failed" };
-
         }
         return new StatusDto { StatusCode = 0, Message = "Email not found" };
+    }
+
+    public async Task<StatusDto> ChangePassLoggedIn(
+        ChangePassLoggedInRequestDto changePassLoggedInRequestDto
+    )
+    {
+        var user = await _context.ApplicationUsers.SingleOrDefaultAsync(
+            a => a.Email == changePassLoggedInRequestDto.Email
+        );
+        if (user is not null)
+        {
+            var changePass = await _userManager.ChangePasswordAsync(
+                user,
+                changePassLoggedInRequestDto.CurrentPassword,
+                changePassLoggedInRequestDto.NewPassword
+            );
+            if (changePass.Succeeded)
+            {
+                return new StatusDto { StatusCode = 1, Message = "Changed password successfully!" };
+            }
+            return new StatusDto { StatusCode = 0, Message = "Changed password error!" };
+        }
+        return new StatusDto { StatusCode = 0, Message = "Email not found!" };
     }
 }

@@ -18,5 +18,6 @@ namespace WebHotel.Repository.UserRepository.AuthenRepository
         Task<StatusDto> RequestResetPassword(string? email);
         Task<StatusDto> RequestChangePassword(ForgotPasswordDto forgotPasswordModel);
         Task<StatusDto> ConfirmChangePassword(ResetPasswordDto resetPasswordModel);
+        Task<StatusDto> ChangePassLoggedIn(ChangePassLoggedInRequestDto changePassLoggedInRequestDto);
     }
 }

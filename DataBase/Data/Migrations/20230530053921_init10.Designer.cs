@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataBase.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20230521125950_init")]
-    partial class init
+    [Migration("20230530053921_init10")]
+    partial class init10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -394,7 +394,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<decimal>("DiscountPercent")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<int>("DiscountTypeId")
                         .HasColumnType("int");
@@ -413,7 +415,9 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getdate()");
 
                     b.HasKey("Id")
                         .HasName("PK__Discount__3214EC078ED86676");
@@ -557,7 +561,7 @@ namespace DataBase.Data.Migrations
 
                     b.Property<string>("CreatorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("PayAt")
                         .ValueGeneratedOnAdd()
@@ -574,7 +578,7 @@ namespace DataBase.Data.Migrations
 
                     b.Property<string>("ReservationId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<bool?>("SelfPay")
                         .ValueGeneratedOnAdd()
@@ -584,8 +588,7 @@ namespace DataBase.Data.Migrations
                     b.HasKey("Id")
                         .HasName("PK__InvoiceR__3214EC07A70F1055");
 
-                    b.HasIndex("CreatorId")
-                        .IsUnique();
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("ReservationId")
                         .IsUnique();
@@ -803,7 +806,9 @@ namespace DataBase.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("getDate()");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -985,45 +990,6 @@ namespace DataBase.Data.Migrations
                     b.ToTable("RoomType", (string)null);
                 });
 
-            modelBuilder.Entity("DataBase.Models.Salary", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<decimal?>("Allowance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(19,2)")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<decimal>("BasicSalary")
-                        .HasColumnType("decimal(19,2)");
-
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("NumberOfDays")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("0");
-
-                    b.Property<DateTime?>("WorkTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("getDate()");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Salary");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique();
-
-                    b.ToTable("Salary", (string)null);
-                });
-
             modelBuilder.Entity("Database.Models.ServiceAttach", b =>
                 {
                     b.Property<int>("Id")
@@ -1100,10 +1066,14 @@ namespace DataBase.Data.Migrations
                         .HasColumnType("ntext");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.Property<decimal?>("PriceDiscount")
-                        .HasColumnType("decimal(19,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(19,2)")
+                        .HasDefaultValueSql("0");
 
                     b.HasKey("Id")
                         .HasName("PK__ServiceR__3214EC077BECCD82");
@@ -1331,13 +1301,13 @@ namespace DataBase.Data.Migrations
 
             modelBuilder.Entity("Database.Models.InvoiceReservation", b =>
                 {
-                    b.HasOne("Database.Models.Reservation", "Reservation")
-                        .WithOne("InvoiceReservation")
-                        .HasForeignKey("Database.Models.InvoiceReservation", "CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Database.Models.ApplicationUser", "Creator")
+                        .WithMany("InvoiceReservations")
+                        .HasForeignKey("CreatorId")
+                        .IsRequired()
+                        .HasConstraintName("FK_InvoiceReservation_ApplicationUser");
+
+                    b.HasOne("Database.Models.Reservation", "Reservation")
                         .WithOne("InvoiceReservation")
                         .HasForeignKey("Database.Models.InvoiceReservation", "ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1449,17 +1419,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("DataBase.Models.Salary", b =>
-                {
-                    b.HasOne("Database.Models.ApplicationUser", "Employee")
-                        .WithOne("Salary")
-                        .HasForeignKey("DataBase.Models.Salary", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("Database.Models.ServiceAttachDetail", b =>
                 {
                     b.HasOne("Database.Models.RoomType", "RoomType")
@@ -1500,8 +1459,7 @@ namespace DataBase.Data.Migrations
 
                     b.Navigation("Discounts");
 
-                    b.Navigation("InvoiceReservation")
-                        .IsRequired();
+                    b.Navigation("InvoiceReservations");
 
                     b.Navigation("Logins");
 
@@ -1510,9 +1468,6 @@ namespace DataBase.Data.Migrations
                     b.Navigation("OrderServices");
 
                     b.Navigation("Reservations");
-
-                    b.Navigation("Salary")
-                        .IsRequired();
 
                     b.Navigation("Tokens");
 

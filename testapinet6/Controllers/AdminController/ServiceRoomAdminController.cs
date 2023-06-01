@@ -12,7 +12,7 @@ namespace WebHotel.Controllers.AdminController;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("v{version:apiVersion}/admin/service-room/")]
-[Authorize(Roles = "Admin")]
+// [Authorize(Roles = "Admin")]
 public class ServiceRoomAdminController : ControllerBase
 {
     private readonly MyDBContext _context;
@@ -81,9 +81,11 @@ public class ServiceRoomCreateDto
     public string? Name { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]
+    [Range(0,Int32.MaxValue,ErrorMessage = "Value for {0} must be between {1} and {2}.")]
     public decimal? Price { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]
+    [Range(0,1000,ErrorMessage = "Value for {0} must be between {1} and {2}.")]
     public int? Amount { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]
