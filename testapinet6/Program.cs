@@ -23,8 +23,7 @@ builder.Services.AddCors(options =>
                 .WithOrigins(
                     "http://localhost:4200",
                     "http://localhost:8000",
-                    "https://user.webhotel.click",
-                    "https://admin.webhotel.click"
+                    "http://localhost:7000"
                 )
                 .AllowAnyMethod()
                 .AllowAnyHeader()

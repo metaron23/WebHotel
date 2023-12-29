@@ -22,8 +22,8 @@ public class MomoController : ControllerBase
         string accessKey = "M8brj9K6E22vXoDB";
         string serectkey = "nqQiVSgDMy809JoPF6OzP5OdBUB550Y4";
         string orderInfo = momoRequestDto.orderInfo!;
-        string redirectUrl = "https://user.webhotel.click/successPayment";
-        string ipnUrl = "https://user.webhotel.click/successPayment";
+        string redirectUrl = "http:/localhost:4200/successPayment";
+        string ipnUrl = "http:/localhost:4200/successPayment";
         string requestType = "captureWallet";
 
         string amount = momoRequestDto.amount!;

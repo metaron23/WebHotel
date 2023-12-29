@@ -78,19 +78,22 @@ public class ReservationAdminController : ControllerBase
     {
         var optionsBuilder = new DbContextOptionsBuilder<MyDBContext>();
         optionsBuilder.UseSqlServer("Data Source=103.130.212.186;Initial Catalog=webhotel;Persist Security Info=True;User ID=metaron;Password=Hung1997;Connection Timeout=300");
-
-        using (MyDBContext context1 = new MyDBContext(optionsBuilder.Options))
+        if (id is not null)
         {
-            var reservation = await context1.Reservations.SingleOrDefaultAsync(a => a.Id == id);
-            var reservationPayment = await context1.ReservationPayments.SingleOrDefaultAsync(a => a.ReservationId == id);
-            if (reservationPayment == null && reservation != null)
+            using (MyDBContext context1 = new MyDBContext(optionsBuilder.Options))
             {
-                context1.Remove(reservation!);
-                await context1.SaveChangesAsync();
-                timer.Stop();
-                timer.Dispose();
+                var reservation = await context1.Reservations.SingleOrDefaultAsync(a => a.Id == id);
+                var reservationPayment = await context1.ReservationPayments.SingleOrDefaultAsync(a => a.ReservationId == id);
+                if (reservationPayment == null && reservation != null)
+                {
+                    context1.Remove(reservation!);
+                    await context1.SaveChangesAsync();
+                    timer.Stop();
+                    timer.Dispose();
+                }
             }
         }
+
     }
 
     [HttpPost("create")]

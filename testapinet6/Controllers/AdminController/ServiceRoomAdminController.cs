@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Database.Data;
 using Database.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -81,11 +80,11 @@ public class ServiceRoomCreateDto
     public string? Name { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]
-    [Range(0,Int32.MaxValue,ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+    [Range(0, Int32.MaxValue, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
     public decimal? Price { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]
-    [Range(0,1000,ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+    [Range(0, 1000, ErrorMessage = "Value for {0} must be between {1} and {2}.")]
     public int? Amount { get; set; }
 
     [Required(ErrorMessage = "{0} is required")]

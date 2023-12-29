@@ -76,6 +76,17 @@ public class OrderServiceAdminController : ControllerBase
         }
         return Ok(result);
     }
+
+    [HttpGet("get-by-reservation")]
+    public async Task<IActionResult> GetByReservation(string reservationId)
+    {
+        var result = _mapper.Map<List<OrderServiceResponseDto>>(await _context.OrderServices.AsNoTracking().Where(x => x.ReservationId == reservationId).Include(a => a.User).OrderByDescending(a => a.Id).ToListAsync());
+        if (result.Count == 0)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 }
 public class OrderServiceCreateDto
 {

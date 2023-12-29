@@ -72,6 +72,17 @@ public class InvoiceAdminController : ControllerBase
             return BadRequest(new StatusDto { StatusCode = 0, Message = "Please create reservation again, time out" });
         }
     }
+
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _context.InvoiceReservations.ToListAsync();
+        if (result.Count == 0)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 }
 public class InvoiceCreateAdmin
 {

@@ -295,7 +295,7 @@ public class AuthenUserRepository : ControllerBase, IAuthenUserRepository
                         To = user.Email,
                         Subject = "Mail reset account password!",
                         Body =
-                            "Chào bạn, "
+                            "Hello, "
                             + user.Name
                             + "! Your new password is: "
                             + password
